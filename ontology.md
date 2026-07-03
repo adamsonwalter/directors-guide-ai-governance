@@ -5,7 +5,7 @@ description: Single source of truth for all concept types, relationship semantic
 memory_tier: semantic
 confidence: 1.0
 okf_version: "0.1"
-timestamp: 2026-07-03T00:00:00Z
+timestamp: 2026-07-03T02:55:56Z
 tags: [ontology, system, governance]
 ---
 
@@ -63,7 +63,9 @@ and propose an addition via the ONTOLOGY_AGENT (see §EXTENDING).
 > Add domain-specific types below as the bundle grows.
 > Format: `| Type | Description | Typical Body Sections |`
 
-*(empty at bundle initialisation — add as needed)*
+| Type | Description | Typical Body Sections |
+|---|---|---|
+| `Erratum` | A documented factual error or material omission in the source Guide, paired with the canonical/corrected position and a confidence grade (CONFIRMED / UNSETTLED / REASONED VIEW). Used so the bundle does not silently inherit the source document's mistakes. | Guide Statement, Canonical Position, Why It Matters, Confidence |
 
 ---
 
@@ -127,6 +129,9 @@ Unregistered tags trigger a Type Orphan gap flag (T3 only; see `optional/LLM_WIK
 | `enablers` | Enablers such as technology infrastructure, literacy culture |
 | `case-study` | Real-world organisation case studies |
 | `checklist` | Practical checklists for SME and NFP boards |
+| `privacy` | Privacy Act 1988 (Cth) and ADM-disclosure specific concepts |
+| `errata` | Concepts recording a hard error or gap in the source Guide and its correction |
+| `appendix` | Concepts sourced from the Guide's Appendices (A–D) |
 
 
 ---
@@ -264,3 +269,4 @@ types in existing concept files should flag for migration, not auto-migrate.
 |---|---|---|
 | 0.1 | 2026-06-19 | Initial ontology for bundle bootstrap kit |
 | 0.2 | 2026-07-03 | Added **§Deliverable Parity Contracts** — an opt-in registry for hand-authored interactive deliverables that embed a denormalized snapshot of a concept subdirectory. Generalises a bundle-specific fix (`privacy-act-okf` scenario/decision-map drift) into a reusable kit pattern. Empty template + one illustrative worked example; no live contract in this seed ontology. Paired with AGENTS.MD changes enforcing it at write time (ENRICHMENT_AGENT) and audit time (CONFORMANCE_AGENT CHECK_7). No new types/tags. |
+| 0.3 | 2026-07-03 | Canonical re-ingestion of the full source PDF/extracted text (56 pages) against `directors-guide-hard-error-register.md`. Added type `Erratum` (Project-Specific Types) and tags `privacy`, `errata`, `appendix` (Domain Tags) — ONTOLOGY_AGENT extension proposed and approved same-session under direct instruction from the bundle owner. Registered a `checklists/hard-error-register.md` concept (type `Erratum`, one row per HE-1…HE-7 finding) so the bundle carries a permanent correction layer instead of silently repeating the Guide's page 39 / Table 4 / p.49 misstatements. Filled two whole-section gaps that existed only as a single generic bullet or not at all: the Privacy Act ADM-disclosure duty (new `foundations/privacy-act-adm-disclosure.md`) and Part 3 – Measuring AI Returns (new `operating-model/measuring-ai-returns.md`), plus Appendix A's full regulatory obligations table (new `foundations/regulatory-obligations-appendix-a.md`) and Appendix B resources. Added the previously-missing fifth case study, Telstra (`case-studies/telstra-case-study.md` — present in the Guide body p.45 but omitted from its own Contents page and from this bundle). Corrected two case-study drift errors against source (CBA model-governance structure; Westpac literacy-program mechanics, which had been paraphrased into content not in the Guide). Expanded the glossary from 6 to the Guide's full ~25-term Appendix D, and rebuilt the SME/NFP checklist to mirror Appendix C's four-category table verbatim rather than an invented 5-step list. See `log.md` for the full per-file mutation record. |

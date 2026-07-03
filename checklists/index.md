@@ -2,9 +2,9 @@
 
 ## Playbooks
 
-* [SME and NFP Director Checklist](sme-nfp-checklist.md) — A practical checklist for directors of small-to-medium enterprises and not-for-profits to govern AI adoption.
+* [Appendix C: SME and NFP Director Checklist](sme-nfp-checklist.md) — The Guide's Appendix C checklist, reproduced verbatim across its four governance elements: AI Strategy, AI Governance Structure, AI Governance Practices, AI Governance Enablers.
 
 ## References
 
-* [Glossary of AI Governance Terms](glossary.md) — Core definitions of AI terms used throughout the Director's Guide to AI Governance.
-
+* [Appendix B: Resources](appendix-b-resources.md) — The Guide's curated list of Federal Government, AICD, HTI, Business Council of Australia, Governance Institute of Australia and CBA resources for further reading on AI governance.
+* [Glossary of AI Governance Terms](glossary.md) — The Guide's full Appendix D glossary of AI governance terms and acronyms.

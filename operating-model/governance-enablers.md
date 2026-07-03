@@ -2,8 +2,9 @@
 type: Concept
 title: "AI Governance Enablers"
 description: "Successful AI adoption relies on tech infrastructure, a culture of responsible AI, and proactive stakeholder engagement."
+resource: "A Director's Guide to AI Governance (AICD/HTI, v2, June 2026), pp.41-43"
 tags: ["governance", "operating-model", "enablers"]
-timestamp: 2026-07-03T02:02:05Z
+timestamp: 2026-07-03T02:55:56Z
 ---
 
 # AI Governance Enablers
@@ -12,18 +13,20 @@ Beyond structures and practices, successful AI governance depends on key enabler
 
 ## AI Technology and Supporting Infrastructure
 
-A pre-condition of significant organisational investment in AI is enhancing the underlying digital, data, and technology infrastructure. This includes computing capacity, data storage, and network capabilities. Boards should receive assurance that the infrastructure can support planned workloads.
+A pre-condition of significant organisational investment in AI is enhancing the underlying digital, data, and technology infrastructure (Figure 4): **computing power** (cloud infrastructure or in-house servers), **high-quality data sets** (securely protected organisational data), and **networking** (high-speed connectivity). Boards should receive assurance the infrastructure can support current and planned AI workloads, including that management understands how non-linear growth in compute demand affects capital allocation and operating expenditure.
 
 ## AI Literacy and Responsible Culture
 
-An organisational culture that embraces AI knowledge, literacy, and responsible use is critical. Boards should support training programs to raise AI literacy across the workforce and foster an ethical culture of compliance.
+An organisational culture that embraces AI knowledge, literacy, and responsible use is critical, particularly given the high incidence of shadow AI. Boards should support training programs to raise AI literacy across the workforce (and volunteers, for many NFPs) and foster an ethical culture of compliance, with the board itself potentially setting a 'tone from the top'.
 
 ## Stakeholder Engagement
 
-Organisations must remain sensitive to the impact of AI on employees and customers:
-* **Employees**: Managing job transition, supporting psychological safety, and clarifying acceptable use.
-* **Customers**: Ensuring transparency, maintaining human-in-the-loop options, and protecting privacy.
-
+Organisations must remain sensitive to the impact of AI on internal and external stakeholders:
+* **Customers and clients**: Transparency about AI deployment, including use of personal information, consistent with Privacy Act requirements; targeted consultation may be appropriate for sensitive deployments (e.g. a care-sector NFP), though this is unlikely to be feasible for organisations with very large customer bases.
+* **Employees**: Consultation, training and support should accompany widespread AI adoption. HTI's *Invisible Bystanders* research found worker engagement is often limited despite employees' critical role in successful implementation; industrial relations laws may also require consultation on AI changes materially affecting work or employment.
+* **Suppliers**: Consultation may be appropriate where AI systems alter the supplier relationship or use supplier data.
+* **Broader stakeholders**: Larger organisations' stakeholders extend to the community, government and regulators — key to reputation and social licence, particularly where AI trials affect large numbers of customers or employees.
 
 ## Related Concepts
 * [Case Study: Westpac – Building Senior Leadership's AI Literacy](/case-studies/westpac-case-study.md)
+* [Case Study: Telstra – AI Governance Operating Model in Action](/case-studies/telstra-case-study.md)
