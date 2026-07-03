@@ -36,6 +36,7 @@ OKF v0.1 hard rules (§9). A bundle is conformant when:
    bundle-root `index.md`, which MAY carry a single fenced `okf_version` frontmatter block
    (§11). That is the only place frontmatter is permitted in any `index.md`.
 4. `log.md` files follow §7 format: ISO 8601 date headings, newest-first, bold action verbs.
+   CHECK_8 additionally forbids placeholder-only logs when the bundle has mutated.
 
 Reserved filenames (must never be used as concept documents): `index.md`, `log.md`
 
@@ -51,6 +52,7 @@ TRIGGER: Any of the following inputs:
   - Raw text, research notes, documents, or structured data to be ingested
   - A request to update, query, or traverse the knowledge bundle
   - A request to validate or audit the bundle for conformance
+  - A request to commit, push, or save the bundle to version control
 
 ROUTING TABLE:
   Input contains new knowledge or concepts              →  dispatch ENRICHMENT_AGENT
@@ -60,6 +62,9 @@ ROUTING TABLE:
   Input is "rebuild log" or "repair log"                →  dispatch LOG_AGENT (standalone)
   Input is "build projection", "export", or "update projection"
                                                         →  dispatch PROJECTION_AGENT
+  Input is "commit", "push", "save", or "commit and push"
+                                                        →  dispatch LOG_AGENT first, then
+                                                            §BUNDLE-MAINTENANCE COMMIT CHECKLIST
   Input describes a new hand-authored interactive deliverable that embeds a
   snapshot of concept data, or says "register deliverable parity"           →  dispatch ONTOLOGY_AGENT
                                                                                 (add a Deliverable
@@ -67,8 +72,11 @@ ROUTING TABLE:
                                                                                 see ontology.md
                                                                                 §Deliverable Parity
                                                                                 Contracts)
+  Direct edits to bundle infrastructure (AGENTS.MD, ontology.md, .gitignore,
+  projections/, index.md rebuilds outside ENRICHMENT, playbooks, README)
+                                                        →  BUNDLE-MAINTENANCE path (below)
 
-SEQUENCING RULE:
+SEQUENCING RULE — enrichment pipeline:
   ENRICHMENT_AGENT always runs in this fixed order:
     1. ENRICHMENT_AGENT  (parse, classify, write concept files)
     2. LINK_AGENT        (inject cross-links after all concept files exist)
@@ -77,6 +85,16 @@ SEQUENCING RULE:
 
   Agents 2–4 receive the MUTATION_MANIFEST output from step 1.
   Do not run INDEX_AGENT or LOG_AGENT before ENRICHMENT_AGENT completes.
+
+SEQUENCING RULE — bundle-maintenance path:
+  When infrastructure files are edited outside the enrichment pipeline:
+    1. Apply the infrastructure edit (AGENTS.MD, ontology.md, projections/, etc.)
+    2. LOG_AGENT         (append mutation record to log.md — mandatory before commit)
+    3. CONFORMANCE_AGENT (recommended — must pass CHECK_8 before commit)
+    4. git commit / git push only via §BUNDLE-MAINTENANCE COMMIT CHECKLIST
+
+  NEVER commit or push with a placeholder-only log.md. NEVER wipe log.md to a
+  template stub. See Invariant #9.
 ```
 
 ---
@@ -308,6 +326,13 @@ ACTION:
   * **Link**: [<concept A>] ↔ [<concept B>] — relationship injected
   * **Pruned**: [<concept A>] → [<dead-target>] — target did not exist
   * **Deprecation**: [<title>](<path>.md) — <reason> (use when a concept is retired)
+  * **Kit**: [<path>](<bundle-relative-path>) — bundle infrastructure change (AGENTS.MD,
+    ontology.md, projections/, .gitignore, playbooks, README)
+  * **Restructure**: [<path or directory>](<bundle-relative-path>) — directory or index layout change
+  * **Gap**: [<title>](<bundle-relative-path>.md) — documented omission, stub, or known gap
+  * **Initialization**: [<path>](<bundle-relative-path>) — repo or bundle bootstrap event
+  * **Ontology Extension**: [<type or tag>](ontology.md) — approved registry addition
+  * **Ontology Proposal**: [<type or tag>](ontology.md) — awaiting human approval
 
   ═══════════════════════════════════════════════════════════════════════════════
 
@@ -316,9 +341,13 @@ ACTION:
   - Use today's date (UTC).
   - If a date block for today already exists, append new entries under it.
   - Do NOT create a new date block for the same date.
-  - Bold action word is required: **Creation**, **Update**, **Link**, **Pruned**, **Deprecation**.
-  - Each entry links to the affected concept using a bundle-relative path.
+  - Bold action word is required. Valid verbs: **Creation**, **Update**, **Link**, **Pruned**,
+    **Deprecation**, **Kit**, **Restructure**, **Gap**, **Initialization**, **Ontology Extension**,
+    **Ontology Proposal**.
+  - Each entry links to the affected file using a bundle-relative path where applicable.
   - Omit categories with zero entries (do not write "* **Pruned**: none").
+  - NEVER replace log.md body with only the title and a placeholder comment. Real date blocks
+    with at least one entry MUST remain after every LOG_AGENT pass.
 
 GATE_7: Is log.md valid — date heading in ISO 8601, entries newest-first, no frontmatter?
   YES → HALT with SUCCESS. Report summary to orchestrator.
@@ -378,6 +407,11 @@ CHECK_7  For EVERY row in ontology.md §Deliverable Parity Contracts: the files 
          1:1 correspondence. Do not just compare counts — diff the actual keys and NAME any
          source file with no matching record, and any deliverable record with no matching
          source file. Skip CHECK_7 entirely (not a fail) if the contracts table has no rows.
+CHECK_8  log.md is not placeholder-only while the bundle has clearly mutated. FAIL when:
+         (a) log.md contains no `## YYYY-MM-DD` date block with at least one `* **` entry, OR
+         (b) log.md body is only the title plus an autogenerated placeholder comment (e.g.
+             "populated by LOG_AGENT"), AND any of: concept files exist on disk; git shows
+             uncommitted changes; or the newest concept `timestamp` is newer than LOG_HEAD.
 
 ─── STATE: REPORT ───────────────────────────────────────────────────────────────
 ACTION:
@@ -391,6 +425,7 @@ ACTION:
   FAIL  CHECK_7  Contract `scenario-decision-map`: scenarios/scenario-h-*.md and
                  scenarios/scenario-i-*.md have no matching record in
                  deliverables/app-1-7-trigger-test-decision-map.html (missing ids: H, I).
+  FAIL  CHECK_8  log.md is placeholder-only but 22 concept files exist; LOG_HEAD absent.
   ...
   ─────────────────────────────────────────────────────
   STATUS: NON-CONFORMANT — 1 failure, 1 warning
@@ -514,12 +549,45 @@ These rules apply at all times and override any agent instruction:
 5. **Conflict annotation, never silent overwrite.** Use `<!-- CONFLICT -->` comments.
 6. **LINK_AGENT runs after all concept files are written** in the current batch.
 7. **INDEX_AGENT runs after LINK_AGENT** so index entries reflect final file state.
-8. **LOG_AGENT runs last.** The log is a record of what happened, not a plan.
-9. **A deliverable with a registered Parity Contract is updated in the SAME batch** as the concept
-   mutation that would otherwise break parity — never deferred to "later" or assumed covered by
-   PROJECTION_AGENT (it only writes `projections/`, never `deliverables/`). This is unconditional:
-   it applies to every create/retire event inside the contract's `Source scope`, not just changes
-   that "seem significant enough" to warrant it.
+8. **LOG_AGENT runs last in the enrichment pipeline.** The log is a record of what happened, not a plan.
+9. **Never commit or push without appending to log.md.** Bundle-maintenance edits and all
+   commit/push/save requests MUST run LOG_AGENT first. Never wipe log.md to a placeholder-only stub.
+10. **A deliverable with a registered Parity Contract is updated in the SAME batch** as the concept
+    mutation that would otherwise break parity — never deferred to "later" or assumed covered by
+    PROJECTION_AGENT (it only writes `projections/`, never `deliverables/`). This is unconditional:
+    it applies to every create/retire event inside the contract's `Source scope`, not just changes
+    that "seem significant enough" to warrant it.
+
+---
+
+## §BUNDLE-MAINTENANCE COMMIT CHECKLIST
+
+Run this sequence before every `git commit` or `git push` on this bundle — whether the
+changes came from the enrichment pipeline or from direct infrastructure edits.
+
+```
+STEP 1 — INVENTORY
+  Run `git status`. List every created, modified, and deleted file.
+  Classify each path: concept | index | infrastructure | projection | other.
+
+STEP 2 — LOG_AGENT (mandatory)
+  Append one log.md entry per meaningful change using the correct verb
+  (Creation, Update, Kit, Restructure, Gap, Initialization, etc.).
+  HALT if log.md would remain placeholder-only. See Invariant #9 and CHECK_8.
+
+STEP 3 — CONFORMANCE (recommended)
+  Run CONFORMANCE_AGENT. Resolve CHECK_8 failures before committing.
+  A commit with CHECK_8 FAIL is forbidden.
+
+STEP 4 — COMMIT
+  `git add` relevant paths. Write commit message summarising log.md entries.
+  Do not commit log.md separately from the changes it describes.
+
+STEP 5 — PUSH
+  `git push` only after Step 4 succeeds and log.md is included in the commit.
+```
+
+Agents MUST NOT skip Step 2 when the user says "commit", "push", "save", or "commit and push".
 
 ---
 

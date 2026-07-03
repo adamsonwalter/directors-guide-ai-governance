@@ -2,6 +2,9 @@
 
 ## 2026-07-03
 
+* **Kit**: [AGENTS.MD](AGENTS.MD) — adopted bundle-maintenance safeguards from okf-spec-build: LOG_AGENT before commit/push/save; new verbs (Kit, Restructure, Gap, Initialization); Invariant #9 (never commit without log.md); CHECK_8 (placeholder-only log detection); §BUNDLE-MAINTENANCE COMMIT CHECKLIST. Fixes fault where infrastructure edits and git operations bypassed LOG_AGENT.
+* **Initialization**: [index.md](index.md) — git repository initialized; initial commit `311b997` and re-ingest commit `c0b8137` pushed to `origin/main` (https://github.com/adamsonwalter/directors-guide-ai-governance) without prior LOG_AGENT entries; backfilled here.
+* **Gap**: [log.md](log.md) — prior commits updated domain concepts but two git-only operations (init, commit/push) skipped LOG_AGENT; resolved by this backfill and AGENTS.MD routing fix.
 * **Ontology Extension**: Added type `Erratum` and tags `privacy`, `errata`, `appendix` in [ontology.md](ontology.md) (v0.2 → v0.3) — approved same-session under direct instruction from the bundle owner, to support canonical re-ingestion against `directors-guide-hard-error-register.md`.
 * **Creation**: [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](errata/privacy-act-hard-error-register.md) — new `errata/` subdirectory; records the seven audited hard errors (HE-1…HE-7) so the bundle does not silently repeat the Guide's own mistakes.
 * **Creation**: [Privacy Act ADM Disclosure Duty](foundations/privacy-act-adm-disclosure.md) — states the corrected three-limb APP 1.8 test; the Guide's own p.39 wording is internally inconsistent with its Appendix A p.49 wording (see HE-1).

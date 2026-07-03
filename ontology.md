@@ -216,7 +216,7 @@ This is the exact fix applied retroactively to the `privacy-act-okf` bundle afte
 had silently stalled at seven (A–G) for several days — an *additive* new Scenario concept did not
 read, on a first pass, like it triggered "update the deliverable", because the old instruction was
 conditional ("if the new material changes scenarios…") rather than unconditional on any create/
-retire event. See CHANGELOG.md [2.2.0] and AGENTS.MD §ENRICHMENT_AGENT / §CONFORMANCE_AGENT for
+retire event. See [log.md](log.md) and AGENTS.MD §ENRICHMENT_AGENT / §CONFORMANCE_AGENT for
 how this is now enforced unconditionally, at write time and at audit time, for every bundle built
 from this kit — not just the one where the gap was first found.
 
