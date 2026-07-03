@@ -21,6 +21,8 @@ Deploying AI systems requires boards to navigate a complex dynamic of opportunit
 
 Organisations that invest strategically in AI capabilities reportedly outperform slower-adopting peers, with stronger returns from AI systems. Under-investment risks falling behind on cost, product/service innovation, customer service and talent retention. See [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md) for how boards should evaluate whether these benefits are actually being realised.
 
+*Illustrative example (Box 8, p.22):* AI-enabled medical screening and imaging, used alongside clinicians rather than as a replacement, can improve diagnostic accuracy and sensitivity across a range of conditions, increasing detection rates and reducing clinician workload (National Institute of Health, 2025).
+
 ### Opportunities and challenges for SMEs and NFPs
 
 Smaller organisations can deploy accessible, low-cost AI tools — e.g. AI features within accounting products, social media advertising tools, or fundraising-pattern insights for charities. Challenges include a lack of dedicated IT/data specialists, burdensome subscription costs, staff training taking a backseat to operational concerns, heightened data governance and privacy risk where vulnerable-community data is involved, and limited capacity to respond to elevated cyber risk (e.g. patching legacy systems).

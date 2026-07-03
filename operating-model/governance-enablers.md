@@ -27,6 +27,20 @@ Organisations must remain sensitive to the impact of AI on internal and external
 * **Suppliers**: Consultation may be appropriate where AI systems alter the supplier relationship or use supplier data.
 * **Broader stakeholders**: Larger organisations' stakeholders extend to the community, government and regulators — key to reputation and social licence, particularly where AI trials affect large numbers of customers or employees.
 
+## Questions for directors to ask (p.43)
+
+1. Do we have a strategy or process for understanding the impact of our AI implementation on internal and external stakeholders and have we consulted where necessary?
+2. Do we have a comprehensive view of our underlying data volume and quality and how that will influence our AI effectiveness?
+3. Have our cyber security and data governance processes, practices and policies been updated for AI implementation?
+4. Are our current technology platforms and data flows fit-for-purpose to enable safe and responsible data and AI governance? I.e. does the system architecture enable transparency or explanation of decisions?
+
+## Governance red flags (p.43)
+
+1. Management is unable to provide an account of how AI implementation and use will impact our key stakeholders.
+2. There is no data stocktake or inventory and limited understanding of internal data quality.
+3. No or limited training and support for employees on AI system use and risks.
+4. Weak understanding of the necessary technological infrastructure to support AI system implementation and use.
+
 ## Related Concepts
 * [Case Study: Westpac – Building Senior Leadership's AI Literacy](/case-studies/westpac-case-study.md)
 * [Case Study: Telstra – AI Governance Operating Model in Action](/case-studies/telstra-case-study.md)

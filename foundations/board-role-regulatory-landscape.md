@@ -10,6 +10,8 @@ timestamp: 2026-07-03T02:55:56Z
 
 The board plays a critical role in overseeing that the organisation's use of AI aligns with its strategy, risk appetite, and values. While directors do not need to be technical experts, they require a minimum viable understanding of AI to provide effective human oversight.
 
+Box 4, developed by Shirley Chowdhary, sets out five practical ways boards can start to embrace AI: **oversight** (building awareness and assurance), **boardroom wisdom** (generating sharper director thinking), **strategy** (shaping long-term value), **ESG** (reframing culture), and **resilience** (managing dependency and risk).
+
 ## Directors' Duties and AI
 
 Board-level oversight of AI and AI-related risk management forms part of directors' existing duties under the *Corporations Act 2001* (Cth). Directors must act with due care, diligence, in good faith, and for a proper purpose when deploying and using AI systems.

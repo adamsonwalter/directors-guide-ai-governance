@@ -48,6 +48,20 @@ The board should have confidence management maintains an **AI inventory/register
 
 Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
 
+## Questions for directors to ask (p.39)
+
+1. What steps are we taking to be confident that we are meeting our legal and regulatory obligations for the use of AI and associated data collection, storage, and use?
+2. Does our risk management framework adequately address our AI-related risks? Does it differentiate between high-risk and low-risk AI applications?
+3. What controls are in place to manage agentic risks?
+4. Do our existing privacy, data governance, cyber and procurement policies address AI?
+
+## Governance red flags (p.39)
+
+1. The organisation's risk management framework does not address AI risks.
+2. There is no process to assess and evaluate the risks of any AI enabled application or system.
+3. Agentic AI systems have been adopted without rigorous risk identification and controls.
+4. Data governance and privacy controls and policies have not been reviewed to ensure they are fit for purpose for AI systems.
+
 ## Related Concepts
 * [Case Study: Atlassian's Responsible Tech Review](/case-studies/atlassian-case-study.md)
 * [Case Study: Commonwealth Bank of Australia (CBA)](/case-studies/cba-case-study.md)

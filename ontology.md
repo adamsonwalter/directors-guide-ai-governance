@@ -5,7 +5,7 @@ description: Single source of truth for all concept types, relationship semantic
 memory_tier: semantic
 confidence: 1.0
 okf_version: "0.1"
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-03T05:20:08Z
 tags: [ontology, system, governance]
 ---
 
@@ -66,6 +66,7 @@ and propose an addition via the ONTOLOGY_AGENT (see §EXTENDING).
 | Type | Description | Typical Body Sections |
 |---|---|---|
 | `Erratum` | A documented factual error or material omission in the source Guide, paired with the canonical/corrected position and a confidence grade (CONFIRMED / UNSETTLED / REASONED VIEW). Used so the bundle does not silently inherit the source document's mistakes. | Guide Statement, Canonical Position, Why It Matters, Confidence |
+| `Coverage Ledger` | An exhaustive inventory of every named structural unit in a source document (Box/Table/Figure/callout/appendix/quote), mapped to the bundle file(s) that capture it, with a Status column (Captured / Partial / Not applicable). A mechanical completeness gate — distinct from `Erratum`, which checks correctness of what *is* captured, not whether everything *was* captured. | Inventory, Status Legend, Gaps Found and Closed |
 
 ---
 
@@ -132,6 +133,7 @@ Unregistered tags trigger a Type Orphan gap flag (T3 only; see `optional/LLM_WIK
 | `privacy` | Privacy Act 1988 (Cth) and ADM-disclosure specific concepts |
 | `errata` | Concepts recording a hard error or gap in the source Guide and its correction |
 | `appendix` | Concepts sourced from the Guide's Appendices (A–D) |
+| `coverage` | Concepts that audit the bundle's completeness against a source document |
 
 
 ---
@@ -222,6 +224,51 @@ from this kit — not just the one where the gap was first found.
 
 ---
 
+# Source Coverage Contracts
+
+> **Not the same problem as Deliverable Parity Contracts, above.** That section catches
+> *concept → hand-authored deliverable* drift (a snapshot embedded in an HTML/JS artifact
+> going stale after the source concepts change). This section catches a different failure:
+> *source document → bundle* drift, where a named unit in the original source (a Box,
+> Table, Figure, recurring callout, appendix, or cited case) was simply never transcribed
+> into any concept file in the first place. There is no deliverable involved — the miss is
+> in ENRICHMENT_AGENT's own INGEST/MAP pass, not in a downstream artifact. A bundle can be
+> perfectly internally-conformant (every CHECK_1–7 passes) while still failing this, because
+> none of CHECK_1–7 ever look back at the source document.
+>
+> **Why this exists:** during the 2026-07-03 canonical re-ingestion of the AICD/HTI
+> Director's Guide, a full sequential read of the extracted text still missed four
+> recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39,
+> 43) — a single self-review pass, driven by "what stood out as substantively new," is
+> correlated with its own blind spots and will re-miss the same class of content on a
+> re-read. A second, independent review caught it.
+>
+> **This is now enforced at ingestion time, not just audited afterwards.** AGENTS.MD
+> §ENRICHMENT_AGENT's `STATE: INVENTORY` and `GATE_5-COVERAGE` (added 2026-07-03) make
+> building this ledger a mandatory, blocking step of any SOURCE-DOCUMENT MODE ingestion —
+> the pipeline cannot hand off to LINK_AGENT/LOG_AGENT while any ledger row is unresolved.
+> CHECK_9 below is the safety net for a bundle that predates this fix, or a session that
+> skipped STATE: INVENTORY — it is no longer the primary defence.
+
+**Format** — one row per source document being tracked for bundle completeness:
+
+| Field | Meaning |
+|---|---|
+| `Contract ID` | Short slug identifying the contract. |
+| `Coverage ledger file` | Path to the `type: Coverage Ledger` concept enumerating every named unit in the source. |
+| `Source document` | The source PDF/text being tracked (with version/date). |
+| `Identity key` | How ONE row in the ledger maps to ONE structural unit in the source (a Box/Table/Figure number, a page-anchored callout label, an appendix letter). |
+| `Severity` | `ERROR` if an uncaptured unit would misrepresent the source's scope to a reader relying on the bundle as complete (e.g. a director-facing checklist item); `WARNING` if cosmetic (e.g. a front-matter foreword). |
+
+| Contract ID | Coverage ledger file | Source document | Identity key | Severity |
+|---|---|---|---|---|
+| `directors-guide-coverage` | `errata/source-coverage-ledger.md` | *A Director's Guide to AI Governance* (AICD/HTI, v2, June 2026) | Box N / Table N / Figure N / page-anchored callout label / Appendix letter | ERROR |
+
+CONFORMANCE_AGENT should treat a `Coverage Ledger` row marked anything other than
+`Captured` or `Not applicable` as a live gap — see AGENTS.MD §CONFORMANCE_AGENT CHECK_9.
+
+---
+
 # ONTOLOGY_AGENT — Extension Protocol
 
 When ENRICHMENT_AGENT encounters an unregistered `type` or `tag`, it does NOT silently
@@ -270,3 +317,5 @@ types in existing concept files should flag for migration, not auto-migrate.
 | 0.1 | 2026-06-19 | Initial ontology for bundle bootstrap kit |
 | 0.2 | 2026-07-03 | Added **§Deliverable Parity Contracts** — an opt-in registry for hand-authored interactive deliverables that embed a denormalized snapshot of a concept subdirectory. Generalises a bundle-specific fix (`privacy-act-okf` scenario/decision-map drift) into a reusable kit pattern. Empty template + one illustrative worked example; no live contract in this seed ontology. Paired with AGENTS.MD changes enforcing it at write time (ENRICHMENT_AGENT) and audit time (CONFORMANCE_AGENT CHECK_7). No new types/tags. |
 | 0.3 | 2026-07-03 | Canonical re-ingestion of the full source PDF/extracted text (56 pages) against `directors-guide-hard-error-register.md`. Added type `Erratum` (Project-Specific Types) and tags `privacy`, `errata`, `appendix` (Domain Tags) — ONTOLOGY_AGENT extension proposed and approved same-session under direct instruction from the bundle owner. Registered a `checklists/hard-error-register.md` concept (type `Erratum`, one row per HE-1…HE-7 finding) so the bundle carries a permanent correction layer instead of silently repeating the Guide's page 39 / Table 4 / p.49 misstatements. Filled two whole-section gaps that existed only as a single generic bullet or not at all: the Privacy Act ADM-disclosure duty (new `foundations/privacy-act-adm-disclosure.md`) and Part 3 – Measuring AI Returns (new `operating-model/measuring-ai-returns.md`), plus Appendix A's full regulatory obligations table (new `foundations/regulatory-obligations-appendix-a.md`) and Appendix B resources. Added the previously-missing fifth case study, Telstra (`case-studies/telstra-case-study.md` — present in the Guide body p.45 but omitted from its own Contents page and from this bundle). Corrected two case-study drift errors against source (CBA model-governance structure; Westpac literacy-program mechanics, which had been paraphrased into content not in the Guide). Expanded the glossary from 6 to the Guide's full ~25-term Appendix D, and rebuilt the SME/NFP checklist to mirror Appendix C's four-category table verbatim rather than an invented 5-step list. See `log.md` for the full per-file mutation record. |
+| 0.4 | 2026-07-03 | **Remediation pass**, triggered by an independent second review that found v0.3's re-ingestion — despite reading the full source text — still omitted the four recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39, 43) entirely, plus Box 4, Box 8 and the closing "Over the horizon" section. Root cause: v0.3's audit was a single sequential read with no exhaustive unit-by-unit inventory, so attention (tuned to find "the good stuff": errors, new stats, missing sections) silently deprioritised repetitive-but-real structural content. No existing CHECK_1–7 catches this class of miss — those checks validate internal bundle consistency, not source-document completeness. Added type `Coverage Ledger` and tag `coverage`, and a new **§Source Coverage Contracts** section (deliberately distinct from §Deliverable Parity Contracts — that section catches concept→deliverable drift; this one catches source→bundle omission, which has no deliverable involved). Registered contract `directors-guide-coverage` against `errata/source-coverage-ledger.md`, and added AGENTS.MD CHECK_9 (CHECK_8 was already in use for a log.md placeholder check) so a future CONFORMANCE_AGENT run can catch this mechanically rather than relying on a second re-read. All four Q&A/red-flag boxes, Box 4, Box 8 and "Over the horizon" are now captured; see `log.md`. |
+| 0.5 | 2026-07-03 | **Process fix**, moving the safeguard from an after-the-fact audit (CHECK_9, v0.4) to a mandatory ingestion-time step. Added `SOURCE-DOCUMENT MODE` vs `NOTE MODE` to AGENTS.MD's ORCHESTRATOR routing table; added `STATE: INVENTORY` to ENRICHMENT_AGENT (mandatory in SOURCE-DOCUMENT MODE, skipped in NOTE MODE) — a mechanical, structure-driven enumeration pass that runs *before* any concept is written, so the Coverage Ledger is built from the document's own headings/numbering rather than from what a reader happened to notice; added `GATE_5-COVERAGE`, which blocks handoff to LINK_AGENT/INDEX_AGENT/LOG_AGENT while any ledger row remains "Not yet checked"; added Bundle Invariant #11 stating the same rule permanently. §Source Coverage Contracts (above) updated to describe CHECK_9 as the safety net, not the primary defence, now that STATE: INVENTORY exists. No new types/tags — this release is entirely inside AGENTS.MD's agent behaviour plus this explanatory update. |

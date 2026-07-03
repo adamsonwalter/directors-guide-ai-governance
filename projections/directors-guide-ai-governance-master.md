@@ -2,9 +2,9 @@
 
 | Field            | Value                                                 |
 |---|---|
-| Generated        | 2026-07-03T03:05:05Z |
+| Generated        | 2026-07-03T05:20:40Z |
 | Scope            | master (all concepts) |
-| Concepts included| 19 |
+| Concepts included| 20 |
 | Log head         | 2026-07-03 |
 | Sync status      | Current |
 
@@ -74,6 +74,7 @@ and propose an addition via the ONTOLOGY_AGENT (see §EXTENDING).
 | Type | Description | Typical Body Sections |
 |---|---|---|
 | `Erratum` | A documented factual error or material omission in the source Guide, paired with the canonical/corrected position and a confidence grade (CONFIRMED / UNSETTLED / REASONED VIEW). Used so the bundle does not silently inherit the source document's mistakes. | Guide Statement, Canonical Position, Why It Matters, Confidence |
+| `Coverage Ledger` | An exhaustive inventory of every named structural unit in a source document (Box/Table/Figure/callout/appendix/quote), mapped to the bundle file(s) that capture it, with a Status column (Captured / Partial / Not applicable). A mechanical completeness gate — distinct from `Erratum`, which checks correctness of what *is* captured, not whether everything *was* captured. | Inventory, Status Legend, Gaps Found and Closed |
 
 ---
 
@@ -140,6 +141,7 @@ Unregistered tags trigger a Type Orphan gap flag (T3 only; see `optional/LLM_WIK
 | `privacy` | Privacy Act 1988 (Cth) and ADM-disclosure specific concepts |
 | `errata` | Concepts recording a hard error or gap in the source Guide and its correction |
 | `appendix` | Concepts sourced from the Guide's Appendices (A–D) |
+| `coverage` | Concepts that audit the bundle's completeness against a source document |
 
 
 ---
@@ -224,9 +226,54 @@ This is the exact fix applied retroactively to the `privacy-act-okf` bundle afte
 had silently stalled at seven (A–G) for several days — an *additive* new Scenario concept did not
 read, on a first pass, like it triggered "update the deliverable", because the old instruction was
 conditional ("if the new material changes scenarios…") rather than unconditional on any create/
-retire event. See CHANGELOG.md [2.2.0] and AGENTS.MD §ENRICHMENT_AGENT / §CONFORMANCE_AGENT for
+retire event. See [log.md](log.md) and AGENTS.MD §ENRICHMENT_AGENT / §CONFORMANCE_AGENT for
 how this is now enforced unconditionally, at write time and at audit time, for every bundle built
 from this kit — not just the one where the gap was first found.
+
+---
+
+# Source Coverage Contracts
+
+> **Not the same problem as Deliverable Parity Contracts, above.** That section catches
+> *concept → hand-authored deliverable* drift (a snapshot embedded in an HTML/JS artifact
+> going stale after the source concepts change). This section catches a different failure:
+> *source document → bundle* drift, where a named unit in the original source (a Box,
+> Table, Figure, recurring callout, appendix, or cited case) was simply never transcribed
+> into any concept file in the first place. There is no deliverable involved — the miss is
+> in ENRICHMENT_AGENT's own INGEST/MAP pass, not in a downstream artifact. A bundle can be
+> perfectly internally-conformant (every CHECK_1–7 passes) while still failing this, because
+> none of CHECK_1–7 ever look back at the source document.
+>
+> **Why this exists:** during the 2026-07-03 canonical re-ingestion of the AICD/HTI
+> Director's Guide, a full sequential read of the extracted text still missed four
+> recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39,
+> 43) — a single self-review pass, driven by "what stood out as substantively new," is
+> correlated with its own blind spots and will re-miss the same class of content on a
+> re-read. A second, independent review caught it.
+>
+> **This is now enforced at ingestion time, not just audited afterwards.** AGENTS.MD
+> §ENRICHMENT_AGENT's `STATE: INVENTORY` and `GATE_5-COVERAGE` (added 2026-07-03) make
+> building this ledger a mandatory, blocking step of any SOURCE-DOCUMENT MODE ingestion —
+> the pipeline cannot hand off to LINK_AGENT/LOG_AGENT while any ledger row is unresolved.
+> CHECK_9 below is the safety net for a bundle that predates this fix, or a session that
+> skipped STATE: INVENTORY — it is no longer the primary defence.
+
+**Format** — one row per source document being tracked for bundle completeness:
+
+| Field | Meaning |
+|---|---|
+| `Contract ID` | Short slug identifying the contract. |
+| `Coverage ledger file` | Path to the `type: Coverage Ledger` concept enumerating every named unit in the source. |
+| `Source document` | The source PDF/text being tracked (with version/date). |
+| `Identity key` | How ONE row in the ledger maps to ONE structural unit in the source (a Box/Table/Figure number, a page-anchored callout label, an appendix letter). |
+| `Severity` | `ERROR` if an uncaptured unit would misrepresent the source's scope to a reader relying on the bundle as complete (e.g. a director-facing checklist item); `WARNING` if cosmetic (e.g. a front-matter foreword). |
+
+| Contract ID | Coverage ledger file | Source document | Identity key | Severity |
+|---|---|---|---|---|
+| `directors-guide-coverage` | `errata/source-coverage-ledger.md` | *A Director's Guide to AI Governance* (AICD/HTI, v2, June 2026) | Box N / Table N / Figure N / page-anchored callout label / Appendix letter | ERROR |
+
+CONFORMANCE_AGENT should treat a `Coverage Ledger` row marked anything other than
+`Captured` or `Not applicable` as a live gap — see AGENTS.MD §CONFORMANCE_AGENT CHECK_9.
 
 ---
 
@@ -278,6 +325,8 @@ types in existing concept files should flag for migration, not auto-migrate.
 | 0.1 | 2026-06-19 | Initial ontology for bundle bootstrap kit |
 | 0.2 | 2026-07-03 | Added **§Deliverable Parity Contracts** — an opt-in registry for hand-authored interactive deliverables that embed a denormalized snapshot of a concept subdirectory. Generalises a bundle-specific fix (`privacy-act-okf` scenario/decision-map drift) into a reusable kit pattern. Empty template + one illustrative worked example; no live contract in this seed ontology. Paired with AGENTS.MD changes enforcing it at write time (ENRICHMENT_AGENT) and audit time (CONFORMANCE_AGENT CHECK_7). No new types/tags. |
 | 0.3 | 2026-07-03 | Canonical re-ingestion of the full source PDF/extracted text (56 pages) against `directors-guide-hard-error-register.md`. Added type `Erratum` (Project-Specific Types) and tags `privacy`, `errata`, `appendix` (Domain Tags) — ONTOLOGY_AGENT extension proposed and approved same-session under direct instruction from the bundle owner. Registered a `checklists/hard-error-register.md` concept (type `Erratum`, one row per HE-1…HE-7 finding) so the bundle carries a permanent correction layer instead of silently repeating the Guide's page 39 / Table 4 / p.49 misstatements. Filled two whole-section gaps that existed only as a single generic bullet or not at all: the Privacy Act ADM-disclosure duty (new `foundations/privacy-act-adm-disclosure.md`) and Part 3 – Measuring AI Returns (new `operating-model/measuring-ai-returns.md`), plus Appendix A's full regulatory obligations table (new `foundations/regulatory-obligations-appendix-a.md`) and Appendix B resources. Added the previously-missing fifth case study, Telstra (`case-studies/telstra-case-study.md` — present in the Guide body p.45 but omitted from its own Contents page and from this bundle). Corrected two case-study drift errors against source (CBA model-governance structure; Westpac literacy-program mechanics, which had been paraphrased into content not in the Guide). Expanded the glossary from 6 to the Guide's full ~25-term Appendix D, and rebuilt the SME/NFP checklist to mirror Appendix C's four-category table verbatim rather than an invented 5-step list. See `log.md` for the full per-file mutation record. |
+| 0.4 | 2026-07-03 | **Remediation pass**, triggered by an independent second review that found v0.3's re-ingestion — despite reading the full source text — still omitted the four recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39, 43) entirely, plus Box 4, Box 8 and the closing "Over the horizon" section. Root cause: v0.3's audit was a single sequential read with no exhaustive unit-by-unit inventory, so attention (tuned to find "the good stuff": errors, new stats, missing sections) silently deprioritised repetitive-but-real structural content. No existing CHECK_1–7 catches this class of miss — those checks validate internal bundle consistency, not source-document completeness. Added type `Coverage Ledger` and tag `coverage`, and a new **§Source Coverage Contracts** section (deliberately distinct from §Deliverable Parity Contracts — that section catches concept→deliverable drift; this one catches source→bundle omission, which has no deliverable involved). Registered contract `directors-guide-coverage` against `errata/source-coverage-ledger.md`, and added AGENTS.MD CHECK_9 (CHECK_8 was already in use for a log.md placeholder check) so a future CONFORMANCE_AGENT run can catch this mechanically rather than relying on a second re-read. All four Q&A/red-flag boxes, Box 4, Box 8 and "Over the horizon" are now captured; see `log.md`. |
+| 0.5 | 2026-07-03 | **Process fix**, moving the safeguard from an after-the-fact audit (CHECK_9, v0.4) to a mandatory ingestion-time step. Added `SOURCE-DOCUMENT MODE` vs `NOTE MODE` to AGENTS.MD's ORCHESTRATOR routing table; added `STATE: INVENTORY` to ENRICHMENT_AGENT (mandatory in SOURCE-DOCUMENT MODE, skipped in NOTE MODE) — a mechanical, structure-driven enumeration pass that runs *before* any concept is written, so the Coverage Ledger is built from the document's own headings/numbering rather than from what a reader happened to notice; added `GATE_5-COVERAGE`, which blocks handoff to LINK_AGENT/INDEX_AGENT/LOG_AGENT while any ledger row remains "Not yet checked"; added Bundle Invariant #11 stating the same rule permanently. §Source Coverage Contracts (above) updated to describe CHECK_9 as the safety net, not the primary defence, now that STATE: INVENTORY exists. No new types/tags — this release is entirely inside AGENTS.MD's agent behaviour plus this explanatory update. |
 
 ## AI Governance Enablers
 
@@ -302,6 +351,20 @@ Organisations must remain sensitive to the impact of AI on internal and external
 * **Employees**: Consultation, training and support should accompany widespread AI adoption. HTI's *Invisible Bystanders* research found worker engagement is often limited despite employees' critical role in successful implementation; industrial relations laws may also require consultation on AI changes materially affecting work or employment.
 * **Suppliers**: Consultation may be appropriate where AI systems alter the supplier relationship or use supplier data.
 * **Broader stakeholders**: Larger organisations' stakeholders extend to the community, government and regulators — key to reputation and social licence, particularly where AI trials affect large numbers of customers or employees.
+
+## Questions for directors to ask (p.43)
+
+1. Do we have a strategy or process for understanding the impact of our AI implementation on internal and external stakeholders and have we consulted where necessary?
+2. Do we have a comprehensive view of our underlying data volume and quality and how that will influence our AI effectiveness?
+3. Have our cyber security and data governance processes, practices and policies been updated for AI implementation?
+4. Are our current technology platforms and data flows fit-for-purpose to enable safe and responsible data and AI governance? I.e. does the system architecture enable transparency or explanation of decisions?
+
+## Governance red flags (p.43)
+
+1. Management is unable to provide an account of how AI implementation and use will impact our key stakeholders.
+2. There is no data stocktake or inventory and limited understanding of internal data quality.
+3. No or limited training and support for employees on AI system use and risks.
+4. Weak understanding of the necessary technological infrastructure to support AI system implementation and use.
 
 ## Related Concepts
 * [Case Study: Westpac – Building Senior Leadership's AI Literacy](/case-studies/westpac-case-study.md)
@@ -353,6 +416,20 @@ The board should have confidence management maintains an **AI inventory/register
 
 Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
 
+## Questions for directors to ask (p.39)
+
+1. What steps are we taking to be confident that we are meeting our legal and regulatory obligations for the use of AI and associated data collection, storage, and use?
+2. Does our risk management framework adequately address our AI-related risks? Does it differentiate between high-risk and low-risk AI applications?
+3. What controls are in place to manage agentic risks?
+4. Do our existing privacy, data governance, cyber and procurement policies address AI?
+
+## Governance red flags (p.39)
+
+1. The organisation's risk management framework does not address AI risks.
+2. There is no process to assess and evaluate the risks of any AI enabled application or system.
+3. Agentic AI systems have been adopted without rigorous risk identification and controls.
+4. Data governance and privacy controls and policies have not been reviewed to ensure they are fit for purpose for AI systems.
+
 ## Related Concepts
 * [Case Study: Atlassian's Responsible Tech Review](/case-studies/atlassian-case-study.md)
 * [Case Study: Commonwealth Bank of Australia (CBA)](/case-studies/cba-case-study.md)
@@ -390,6 +467,20 @@ Organisations may use existing governance processes or establish a dedicated, of
 ## Board AI Literacy
 
 A critical enabler of effective AI governance is the board's own AI literacy. Directors should proactively build their understanding of AI concepts (such as generative vs agentic AI, and tokenomics) to ask management the right questions and seek appropriate assurance. Boards lacking these skills can undertake training, recruit members with relevant skills/experience, or establish an AI expert advisory committee.
+
+## Questions for directors to ask (p.33)
+
+1. Do we have a sufficient understanding of how AI technologies are being adopted and used across the organisation, and the associated opportunities and risks with this use?
+2. Has the organisation identified a role with key accountability for AI governance and use?
+3. Has management implemented an effective governance structure for oversight and decision making on AI use, including high-risk uses? Should we establish a management-led AI committee?
+4. Do we receive timely and comprehensive reporting on AI use throughout the organisation and is this reporting periodically updated? *(the Guide's own text reads "Do we received timely..." — see [Hard-Error Register — HE-7](/errata/privacy-act-hard-error-register.md) for editorial defects.)*
+
+## Governance red flags (p.33)
+
+1. AI is adopted in an ad hoc and unplanned way without consideration of whether specific governance process and risk controls are needed.
+2. It is not clear who has responsibility for AI governance in the organisation.
+3. Agentic AI risks are not highlighted in the risk management framework and corresponding risk controls.
+4. AI risks are not reported to the board or are not escalated in a timely way.
 
 ## Related Concepts
 * [Case Study: Canteen – Listening to the Voice of Members](/case-studies/canteen-case-study.md)
@@ -470,6 +561,8 @@ Deploying AI systems requires boards to navigate a complex dynamic of opportunit
 
 Organisations that invest strategically in AI capabilities reportedly outperform slower-adopting peers, with stronger returns from AI systems. Under-investment risks falling behind on cost, product/service innovation, customer service and talent retention. See [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md) for how boards should evaluate whether these benefits are actually being realised.
 
+*Illustrative example (Box 8, p.22):* AI-enabled medical screening and imaging, used alongside clinicians rather than as a replacement, can improve diagnostic accuracy and sensitivity across a range of conditions, increasing detection rates and reducing clinician workload (National Institute of Health, 2025).
+
 ### Opportunities and challenges for SMEs and NFPs
 
 Smaller organisations can deploy accessible, low-cost AI tools — e.g. AI features within accounting products, social media advertising tools, or fundraising-pattern insights for charities. Challenges include a lack of dedicated IT/data specialists, burdensome subscription costs, staff training taking a backseat to operational concerns, heightened data governance and privacy risk where vulnerable-community data is involved, and limited capacity to respond to elevated cyber risk (e.g. patching legacy systems).
@@ -538,6 +631,20 @@ Effective AI implementation cannot occur in a vacuum. The board must oversee:
 * Prioritising AI use cases based on strategic value and risk profile rather than pursuing ad-hoc pilots ('AI for AI's sake').
 
 How to measure whether these investments actually deliver value is addressed separately — see [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md).
+
+## Questions for directors to ask (p.30)
+
+1. Do we as a board have a clear understanding of the organisation's strategy with AI?
+2. Have we communicated to management what we see as the key AI opportunities, and risks to be managed?
+3. What is our risk appetite for AI use, and will this differ across different use cases or stakeholder groups?
+4. Do we have agreed measures and indicators of AI progress and ultimate success, including return on investment?
+
+## Governance red flags (p.30)
+
+1. The organisation is adopting a large number of AI tools without reviewing alignment with strategy and/or potential return on investment.
+2. AI initiatives are disconnected or misaligned from the organisation's core strategy.
+3. The board hasn't considered the risk appetite for AI adoption consistent with the overall organisation's risk appetite, risk register and risk management framework.
+4. We do not have a complete understanding of current resources and internal expertise and whether they will support our planned AI investments.
 
 ## Related Concepts
 * [AI Governance Practices](/operating-model/governance-practices.md)
@@ -1245,9 +1352,47 @@ This framework applies to organisations of any size, but the level of evaluation
 governance effort should be proportionate to the opportunity, cost, risk and complexity of
 the deployment.
 
+## Over the horizon (p.48)
+
+Since the first version of this publication in 2024, AI has evolved from largely
+standalone tools towards more integrated, autonomous systems increasingly embedded within
+software and digital products and services. In the coming years, advances in agentic AI,
+embodied AI and robotics may enable systems and machines to perceive, reason and act in
+dynamic settings, with 'digital workers' operating alongside human teams — for example:
+
+* Widespread use of individual agents undertaking tasks on behalf of individuals and
+  organisations (e.g. online shopping, interacting with trusted merchants).
+* Significant penetration of autonomous vehicles in Australia.
+* Increased prevalence of robotics in sectors beyond manufacturing.
+* AI-driven energy solutions focused on efficient use of energy generation and
+  infrastructure, including renewable sources.
+* An embrace of AI-powered diagnostics, personalised healthcare and rapid advancements in
+  drug development.
+
+These trends may be supercharged by advances in quantum computing, bringing both an
+increase in cyber security vulnerabilities and improved defences against threats
+including identity theft. As AI moves from a decision-support role to one that actively
+shapes outcomes for people and organisations, questions of accountability, oversight and
+responsibility may become more complex.
+
+## The key ongoing role of the board
+
+Boards play a key role at all Australian organisations in overseeing the effective,
+responsible and safe deployment of AI — a role that will not change despite AI's rapid
+advances in years to come. Boards need to continue working closely with management to
+carefully consider the stakeholder, regulatory and governance implications of AI specific
+to their organisation and industry, and to stay engaged with the shifting AI regulation
+and governance landscape. Whatever the future of AI regulation brings, a broad range of
+existing legal obligations already apply to an organisation's use of AI systems — see
+[Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md).
+By investing in the governance of their organisations, directors help deploy AI systems
+safely, responsibly and strategically so that Australia benefits sustainably from this
+technology.
+
 ## Related Concepts
 * [AI Strategy Alignment](/operating-model/strategy.md)
 * [AI is a Transformative Technology](/foundations/transformative-technology.md)
+* [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 
 ---
 ## Privacy Act ADM Disclosure Duty
@@ -1344,6 +1489,130 @@ for example, the deployment of facial recognition technology without valid conse
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 
 ---
+## Source Coverage Ledger — A Director's Guide to AI Governance
+
+*Type: "Coverage Ledger" | Tags: coverage, errata, review-required | Updated: 2026-07-03T05:06:40Z*
+
+# Source Coverage Ledger — A Director's Guide to AI Governance
+
+> Implements the `directors-guide-coverage` row in [ontology.md §Source Coverage
+> Contracts](/ontology.md). This ledger exists so "did we capture everything" is a table
+> diff, not a re-read. CONFORMANCE_AGENT (CHECK_9) treats any row below not marked
+> **Captured** or **N/A** as a live gap requiring an ENRICHMENT_AGENT pass.
+
+## Status legend
+
+* **Captured** — the unit's substance is transcribed into a bundle concept file.
+* **Partial** — the unit is referenced but not transcribed in full (documented, not a gap
+  requiring action unless upgraded by a future review).
+* **N/A** — deliberately excluded: publication front-matter, acknowledgements, or a preview
+  section whose entire content is a condensed restatement of material captured in full
+  elsewhere in the bundle.
+
+## Boxes (Part 1 & 2)
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| Box 1 — What is an AI System? | p.10 | [Glossary](/checklists/glossary.md) ("AI system"); [AI is a Transformative Technology](/foundations/transformative-technology.md) | Captured |
+| Box 2 — Tokenomics | p.12 | [AI is a Transformative Technology](/foundations/transformative-technology.md); [Glossary](/checklists/glossary.md) | Captured |
+| Box 3 — Terms that can signal AI use | p.13 | [AI is a Transformative Technology](/foundations/transformative-technology.md) | Captured |
+| Box 4 — Ways boards can harness AI | p.15 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| Box 5 — ASD, APRA and ASIC guidance | p.19 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) (Cyber security section) | Captured |
+| Box 6 — Australia's AI Ethics Principles | p.19 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| Box 7 — The AI6 | p.19 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| Box 8 — AI and medical imaging | p.22 | [AI Opportunities and Risks](/foundations/opportunities-and-risks.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| Box 9 — Liability for the actions of AI agents? | p.25 | [AI Opportunities and Risks](/foundations/opportunities-and-risks.md) (Agentic AI section — Air Canada / Civil Resolution Tribunal of BC) | Captured |
+| Box 10 — Who has AI responsibility in Australian organisations? | p.32 | [AI Governance Structure](/operating-model/governance-structure.md) | Captured |
+
+## Tables
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| Table 1 — Overview of key regulatory frameworks | p.18 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| Table 2 — Selected international approaches to AI regulation | p.20 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| Table 3 — Overview of three key sources of risk | p.23 | [AI Opportunities and Risks](/foundations/opportunities-and-risks.md) | Captured |
+| Table 4 — Overview of key AI-related risks | p.24 | [AI Opportunities and Risks](/foundations/opportunities-and-risks.md) | Captured |
+| Table 5 — AI risks and common controls | p.36 | [AI Governance Practices](/operating-model/governance-practices.md) | Captured |
+
+## Figures
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| Figure 1 — Key categories of AI | p.11 | [AI is a Transformative Technology](/foundations/transformative-technology.md) (categories described in prose, not as a reproduced diagram) | Partial |
+| Figure 2 — AICD resources and education on digital governance oversight | p.14 | [Appendix B: Resources](/checklists/appendix-b-resources.md) | Captured |
+| Figure 3 — AI Governance Operating Model | p.27 | Structural — the whole `operating-model/` directory implements this figure | Captured |
+| Figure 4 — AI Technology and Supporting Infrastructure | p.42 | [AI Governance Enablers](/operating-model/governance-enablers.md) | Captured |
+
+## Recurring "Questions for directors to ask" / "Governance red flags" boxes
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| Strategy Q&A + red flags | p.30 | [AI Strategy Alignment](/operating-model/strategy.md) | Captured *(closed 2026-07-03 remediation pass — the original gap this ledger exists to prevent recurring)* |
+| Structure Q&A + red flags | p.33 | [AI Governance Structure](/operating-model/governance-structure.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| Practices Q&A + red flags | p.39 | [AI Governance Practices](/operating-model/governance-practices.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| Enablers Q&A + red flags | p.43 | [AI Governance Enablers](/operating-model/governance-enablers.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| "Boards of SMEs and NFPs" callout boxes (×4, embedded at pp.30/33/38/43) | pp.30,33,38,43 | [Appendix C: SME and NFP Director Checklist](/checklists/sme-nfp-checklist.md) (= Appendix C, verbatim) | Captured |
+
+## Case studies
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| CBA | p.34 | [Case Study: CBA](/case-studies/cba-case-study.md) | Captured |
+| Atlassian | p.40 | [Case Study: Atlassian](/case-studies/atlassian-case-study.md) | Captured |
+| Canteen | p.44 | [Case Study: Canteen](/case-studies/canteen-case-study.md) | Captured |
+| Westpac | p.44 | [Case Study: Westpac](/case-studies/westpac-case-study.md) | Captured |
+| Telstra | p.45 | [Case Study: Telstra](/case-studies/telstra-case-study.md) | Captured |
+
+## Appendices
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| Appendix A — Regulatory obligations and AI | pp.49-50 | [Appendix A](/foundations/regulatory-obligations-appendix-a.md) | Captured |
+| Appendix B — Resources | p.51 | [Appendix B](/checklists/appendix-b-resources.md) | Captured |
+| Appendix C — SME and NFP director checklist | p.52 | [SME/NFP Checklist](/checklists/sme-nfp-checklist.md) | Captured |
+| Appendix D — Glossary | pp.53-54 | [Glossary](/checklists/glossary.md) | Captured |
+
+## Named legal citations and quotes
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| ASIC Report 798 quote | p.16 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| *ASIC v Bekier (Liability Judgment)* [2026] FCA 196 (Justice Michael Lee) | p.17 | [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md) | Captured |
+| *Bunnings Group Limited and Privacy Commissioner* [2026] ARTA 130 | p.49, fn 11 | [Appendix A](/foundations/regulatory-obligations-appendix-a.md) | Captured |
+| Air Canada / Civil Resolution Tribunal of British Columbia | p.25 | [AI Opportunities and Risks](/foundations/opportunities-and-risks.md) | Captured |
+| *Lee v Superior Wood* [2019] FWCFB 2434 | error register only, not in Guide body | [Hard-Error Register — HE-3](/errata/privacy-act-hard-error-register.md) | Captured |
+
+## Closing sections
+
+| Unit | Page | Bundle location | Status |
+|---|---|---|---|
+| "Over the horizon" | p.48 | [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md) | Captured *(closed 2026-07-03 remediation pass)* |
+| "The key ongoing role of the board" | p.48 | [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md) | Captured *(closed 2026-07-03 remediation pass)* |
+
+## Deliberately excluded (N/A)
+
+| Unit | Page | Reason |
+|---|---|---|
+| Ministerial Foreword | pp.3-4 | Publication front-matter; political framing, no distinct governance content. |
+| Partners' Foreword | p.5 | Publication front-matter; restates the guide's purpose, no distinct content. |
+| Snapshot | pp.6-8 | A condensed preview of Parts 1–3, all of which is captured in full in the body concepts above. |
+| Acknowledgements | p.55 | Names of contributors; not governance content. |
+
+## Gaps found and closed (2026-07-03 remediation pass)
+
+An independent second review reported that the four recurring director Q&A / red-flag
+boxes were entirely absent from the bundle despite a full sequential read of the source
+text during the 2026-07-03 canonical re-ingestion. Building this ledger for the first time
+in response surfaced three further gaps that the same sequential read had also missed:
+Box 4, Box 8, and the closing "Over the horizon" / board's-ongoing-role section. All seven
+are now closed (see rows above and `log.md`). No further gaps were found once every named
+structural unit in the source was enumerated and checked off individually — the value of
+this ledger is precisely that it forces enumeration rather than recognition-based recall.
+
+## Related Concepts
+* [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](/errata/privacy-act-hard-error-register.md)
+
+---
 ## The Role of the Board and the Regulatory Landscape
 
 *Type: Concept | Tags: governance, foundations, regulatory | Updated: 2026-07-03T02:55:56Z*
@@ -1351,6 +1620,8 @@ for example, the deployment of facial recognition technology without valid conse
 # The Role of the Board and the Regulatory Landscape
 
 The board plays a critical role in overseeing that the organisation's use of AI aligns with its strategy, risk appetite, and values. While directors do not need to be technical experts, they require a minimum viable understanding of AI to provide effective human oversight.
+
+Box 4, developed by Shirley Chowdhary, sets out five practical ways boards can start to embrace AI: **oversight** (building awareness and assurance), **boardroom wisdom** (generating sharper director thinking), **strategy** (shaping long-term value), **ESG** (reframing culture), and **resilience** (managing dependency and risk).
 
 ## Directors' Duties and AI
 

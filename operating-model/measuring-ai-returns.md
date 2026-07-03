@@ -78,6 +78,44 @@ This framework applies to organisations of any size, but the level of evaluation
 governance effort should be proportionate to the opportunity, cost, risk and complexity of
 the deployment.
 
+## Over the horizon (p.48)
+
+Since the first version of this publication in 2024, AI has evolved from largely
+standalone tools towards more integrated, autonomous systems increasingly embedded within
+software and digital products and services. In the coming years, advances in agentic AI,
+embodied AI and robotics may enable systems and machines to perceive, reason and act in
+dynamic settings, with 'digital workers' operating alongside human teams — for example:
+
+* Widespread use of individual agents undertaking tasks on behalf of individuals and
+  organisations (e.g. online shopping, interacting with trusted merchants).
+* Significant penetration of autonomous vehicles in Australia.
+* Increased prevalence of robotics in sectors beyond manufacturing.
+* AI-driven energy solutions focused on efficient use of energy generation and
+  infrastructure, including renewable sources.
+* An embrace of AI-powered diagnostics, personalised healthcare and rapid advancements in
+  drug development.
+
+These trends may be supercharged by advances in quantum computing, bringing both an
+increase in cyber security vulnerabilities and improved defences against threats
+including identity theft. As AI moves from a decision-support role to one that actively
+shapes outcomes for people and organisations, questions of accountability, oversight and
+responsibility may become more complex.
+
+## The key ongoing role of the board
+
+Boards play a key role at all Australian organisations in overseeing the effective,
+responsible and safe deployment of AI — a role that will not change despite AI's rapid
+advances in years to come. Boards need to continue working closely with management to
+carefully consider the stakeholder, regulatory and governance implications of AI specific
+to their organisation and industry, and to stay engaged with the shifting AI regulation
+and governance landscape. Whatever the future of AI regulation brings, a broad range of
+existing legal obligations already apply to an organisation's use of AI systems — see
+[Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md).
+By investing in the governance of their organisations, directors help deploy AI systems
+safely, responsibly and strategically so that Australia benefits sustainably from this
+technology.
+
 ## Related Concepts
 * [AI Strategy Alignment](/operating-model/strategy.md)
 * [AI is a Transformative Technology](/foundations/transformative-technology.md)
+* [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)

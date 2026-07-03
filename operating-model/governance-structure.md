@@ -31,6 +31,20 @@ Organisations may use existing governance processes or establish a dedicated, of
 
 A critical enabler of effective AI governance is the board's own AI literacy. Directors should proactively build their understanding of AI concepts (such as generative vs agentic AI, and tokenomics) to ask management the right questions and seek appropriate assurance. Boards lacking these skills can undertake training, recruit members with relevant skills/experience, or establish an AI expert advisory committee.
 
+## Questions for directors to ask (p.33)
+
+1. Do we have a sufficient understanding of how AI technologies are being adopted and used across the organisation, and the associated opportunities and risks with this use?
+2. Has the organisation identified a role with key accountability for AI governance and use?
+3. Has management implemented an effective governance structure for oversight and decision making on AI use, including high-risk uses? Should we establish a management-led AI committee?
+4. Do we receive timely and comprehensive reporting on AI use throughout the organisation and is this reporting periodically updated? *(the Guide's own text reads "Do we received timely..." — see [Hard-Error Register — HE-7](/errata/privacy-act-hard-error-register.md) for editorial defects.)*
+
+## Governance red flags (p.33)
+
+1. AI is adopted in an ad hoc and unplanned way without consideration of whether specific governance process and risk controls are needed.
+2. It is not clear who has responsibility for AI governance in the organisation.
+3. Agentic AI risks are not highlighted in the risk management framework and corresponding risk controls.
+4. AI risks are not reported to the board or are not escalated in a timely way.
+
 ## Related Concepts
 * [Case Study: Canteen – Listening to the Voice of Members](/case-studies/canteen-case-study.md)
 * [Case Study: Westpac – Building Senior Leadership's AI Literacy](/case-studies/westpac-case-study.md)
