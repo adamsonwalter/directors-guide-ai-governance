@@ -4,7 +4,7 @@ title: "AI Governance Practices"
 description: "Boards must oversee how AI risks are identified and managed through existing frameworks, including vendor risk and cyber security."
 resource: "A Director's Guide to AI Governance (AICD/HTI, v2, June 2026), pp.35-39"
 tags: ["governance", "operating-model", "practices"]
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-13T03:05:00Z
 ---
 
 # AI Governance Practices
@@ -46,7 +46,7 @@ The board should have confidence management maintains an **AI inventory/register
 
 ## Privacy and transparency
 
-Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
+Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected APP 1.7 applicability gate and APP 1.8 three-limb kinds-based test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
 
 ## Questions for directors to ask (p.39)
 

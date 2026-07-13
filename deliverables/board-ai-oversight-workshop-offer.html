@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light-executive">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Board AI Oversight Workshop — Engagement Offer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* ──────────────────────────────────────────────────────────────────────────
+   LIGHT EXECUTIVE — Governed by templates/light-executive/DESIGN.md
+   DO NOT modify token values. Add component styles BELOW the marked region.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg-page:      #f7f5f0;
+  --bg-surface:   #ffffff;
+  --bg-raised:    #f0ede5;
+  --text-heading: #0d0d0d;
+  --text-body:    #1c1c1c;
+  --text-meta:    #7a7670;
+  --rule:         #c8c3b8;
+  --border:       #dedad2;
+  --accent:       #1a3a2a;
+  --accent-fg:    #ffffff;
+  --font-sans:    'DM Sans', system-ui, sans-serif;
+  --font-serif:   'DM Serif Display', Georgia, serif;
+  --font-mono:    'IBM Plex Mono', monospace;
+  --radius-sm:    2px;
+  --space-xs:     8px;
+  --space-sm:     16px;
+  --space-md:     24px;
+  --space-lg:     32px;
+  --space-xl:     48px;
+  --space-2xl:    64px;
+  --space-3xl:    96px;
+  --space-4xl:    128px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  background: var(--bg-page);
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { color: var(--text-heading); }
+h1 { font-family: var(--font-serif); font-size: 2.5rem; font-weight: 400; line-height: 1.2; }
+h2 { font-family: var(--font-sans); font-size: 1.25rem; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+h3 { font-family: var(--font-sans); font-size: 1rem; font-weight: 500; }
+.eyebrow { font-family: var(--font-sans); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-meta); }
+.mono { font-family: var(--font-mono); }
+
+/* ── MOTION BASE — shared across all four pillars (do not edit) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+a, button, .btn, [role="button"] {
+  transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+}
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  transition: outline-offset 0.12s ease;
+}
+
+/* ── MOTION — LIGHT EXECUTIVE: print-bias, single-pixel restraint ── */
+.card, [data-card] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.card:hover, [data-card]:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  border-color: var(--text-meta);
+}
+.fade-in { animation: fadeIn 0.5s ease-out both; }
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── ADD COMPONENT STYLES BELOW ── */
+.btn-primary, .button-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: var(--accent-fg);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-primary:hover, .button-primary:hover { opacity: 0.9; }
+.btn-secondary, .button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--text-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-secondary:hover, .button-secondary:hover { background-color: var(--bg-raised); }
+.card {
+  background-color: var(--bg-surface);
+  color: var(--text-body);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 32px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+.pull-stat {
+  background-color: transparent;
+  color: var(--text-heading);
+  border-left: 4px solid var(--accent);
+  padding: 0 0 0 16px;
+  margin: var(--space-md) 0;
+}
+.pull-stat-value {
+  font-family: var(--font-mono);
+  font-size: 2.5rem;
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--text-heading);
+}
+.pull-stat-label {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-meta);
+  margin-top: var(--space-xs);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--space-md) 0;
+}
+th {
+  background-color: transparent;
+  color: var(--text-meta);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-xs) var(--space-sm);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+}
+td {
+  background-color: transparent;
+  color: var(--text-body);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-sm);
+  font-size: 0.95rem;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: transparent;
+  color: var(--text-meta);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.section-rule {
+  height: 3px;
+  background-color: var(--accent);
+  border: none;
+  margin: var(--space-xl) 0 var(--space-md) 0;
+}
+/* ── document-specific layout ── */
+.page { max-width: 880px; margin: 0 auto; padding: var(--space-2xl) var(--space-lg); }
+.hero-grid { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-lg); align-items: end; margin-bottom: var(--space-lg); }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); margin: var(--space-lg) 0; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-lg); }
+.reading { max-width: 65ch; }
+ul.plain { list-style: none; padding: 0; }
+ul.plain li { padding: var(--space-xs) 0; border-bottom: 1px solid var(--rule); font-size: 0.95rem; }
+ul.plain li:last-child { border-bottom: none; }
+footer.foot-attrib { margin-top: var(--space-3xl); padding-top: var(--space-md); border-top: 1px solid var(--border); }
+footer.foot-attrib p { font-size: 0.75rem; color: var(--text-meta); text-align: center; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Engagement Offer</div>
+  <div class="hero-grid">
+    <h1>Board AI Oversight Workshop</h1>
+    <div class="pull-stat">
+      <div class="pull-stat-value">$5,000</div>
+      <div class="pull-stat-label">2 hours + written report</div>
+    </div>
+  </div>
+  <p class="reading">A live, facilitated board session anchored to the AICD/HTI <em>Director's
+  Guide to AI Governance</em> (v2, June 2026) and a corrected, audited knowledge bundle. The
+  board leaves with an honest inventory of where AI and decision-driving software sit against
+  the Privacy Act's automated-decision disclosure duty (10 December 2026), the parallel
+  statutory-tort and director-duty exposure either side of it, and a board-ready action
+  register — not a slide deck describing the law in the abstract.</p>
+
+  <hr class="section-rule">
+
+  <h2>What's included</h2>
+  <div class="stat-grid">
+    <div class="card">
+      <h3>Live diagnostic session</h3>
+      <p class="reading" style="font-size:0.9rem;">2 hours, in a boardroom on a shared screen
+      or over video conference. Each of the board's actual tools and decision flows is
+      assessed live against the five-condition applicability test — not a generic checklist.</p>
+    </div>
+    <div class="card">
+      <h3>Turnover-scaled exposure</h3>
+      <p class="reading" style="font-size:0.9rem;">Penalty figures calculated against the
+      organisation's own turnover, current from 1 July 2026 — infringement notices, civil
+      penalties, and the s13G serious-interference ceiling.</p>
+    </div>
+    <div class="card">
+      <h3>Board-ready report</h3>
+      <p class="reading" style="font-size:0.9rem;">ADM Action Register, red-flag register from
+      the Operating Model walk, statutory-tort and s180 exposure summary, and a resolution set
+      ready for board minutes — delivered within five business days.</p>
+    </div>
+  </div>
+
+  <hr class="section-rule">
+
+  <div class="two-col">
+    <div>
+      <h2>Session structure</h2>
+      <ul class="plain">
+        <li><strong>Open and baseline</strong> — entity profile, compliance clock (15 min)</li>
+        <li><strong>Operating Model walk</strong> — strategy, structure, practices, enablers (25 min)</li>
+        <li><strong>Privacy Spearhead</strong> — live diagnostic, tool-by-tool (55 min)</li>
+        <li><strong>Facilitator Q&amp;A</strong> — grounded, live (15 min)</li>
+        <li><strong>Close</strong> — action register and resolutions (10 min)</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Who it's for</h2>
+      <p class="reading" style="font-size:0.95rem;">Boards and executive teams of Australian
+      companies and not-for-profits that use, or are evaluating, AI systems, rules engines, or
+      decision-driving software that touches customer, employee, applicant, or member data.
+      Particularly relevant where a board cannot yet answer: which tools would trigger the
+      disclosure duty, and who is accountable for finding out.</p>
+      <h2 style="margin-top: var(--space-lg);">Pre-session ask</h2>
+      <p class="reading" style="font-size:0.95rem;">A one-page list of systems, spreadsheets,
+      or vendor products touching a decision about a person — requested five business days
+      out, from the company secretary or CFO.</p>
+    </div>
+  </div>
+
+  <hr class="section-rule">
+
+  <h2>Basis of the offer</h2>
+  <p class="reading" style="font-size:0.9rem;">Decision-support
+  information, not legal advice. Content on the AICD/HTI <em>Director's Guide to AI
+  Governance</em> is used under CC BY-NC-SA 4.0, © 2026 AICD &amp; Human Technology Institute.
+  Legal positions carry a confidence grade (CONFIRMED / UNSETTLED / REASONED VIEW); anything
+  the board relies on externally should be confirmed with qualified Australian privacy counsel.</p>
+
+  <footer class="foot-attrib">
+    <p>© 2026 Walter Adamson | BHP 20 years, Head IT Audit - IT Strategy - Corporate Planning -
+    International Bus Development | 100+ AI workflow solutions delivered |
+    linkedin.com/in/adamson | walter@outcomesnow.com</p>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -4,21 +4,22 @@ title: "Glossary of AI Governance Terms"
 description: "The Guide's full Appendix D glossary of AI governance terms and acronyms."
 resource: "A Director's Guide to AI Governance (AICD/HTI, v2, June 2026), Appendix D, pp.53-54"
 tags: ["governance", "system", "appendix"]
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-13T03:00:00Z
 ---
 
 # Glossary of AI Governance Terms
 
-> Reproduces the Guide's Appendix D verbatim (pp.53-54). Two governance-relevant terms not
-> in the Guide's own glossary — **Tokenomics** and **Algorithmic Drift** — are retained
-> below as bundle additions and marked accordingly, since they are used elsewhere in this
-> bundle.
+> Reproduces the Guide's Appendix D verbatim (pp.53-54), with **one Privacy Act correction
+> note** on the ADM entry (HE-5) so regenerating or quoting this glossary cannot reintroduce
+> an AI-only framing of the December 2026 duty. Two governance-relevant terms not in the
+> Guide's own glossary — **Tokenomics** and **Algorithmic Drift** — are retained below as
+> bundle additions and marked accordingly, since they are used elsewhere in this bundle.
 
 * **Artificial intelligence (AI)**: A set of technologies that enable machines to perform tasks that typically require human intelligence, such as analysing data, generating content, making predictions or supporting decisions.
 * **Agentic AI**: AI systems capable of executing tasks with a degree of autonomy, often coordinating actions across systems or workflows to achieve an objective.
 * **ACCC**: Australian Competition and Consumer Commission.
 * **ACL**: Australian Consumer Law.
-* **ADM**: Automated decision-making.
+* **ADM**: Automated decision-making. *(Guide glossary — retained.) For the Privacy Act duty commencing 10 December 2026, the operative statutory term is **"computer program"** (not "AI" or "ADM system"); see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) and [Hard-Error Register — HE-5](/errata/privacy-act-hard-error-register.md).*
 * **AASB**: Australian Accounting Standards Board.
 * **AI6 (National AI Centre guidance)**: A set of six essential practices developed by the National AI Centre to support the safe and responsible development and use of AI systems — accountability, impact assessment, risk management, transparency, testing and monitoring, and maintaining human control.
 * **AI assurance**: Processes that provide confidence that AI systems are operating as intended and within defined risk parameters, including testing, validation and audit.

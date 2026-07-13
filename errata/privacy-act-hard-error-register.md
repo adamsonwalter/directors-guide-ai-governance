@@ -1,10 +1,10 @@
 ---
 type: Erratum
 title: "Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide"
-description: "Seven audited errors and gaps in the Guide's treatment of the Privacy Act automated-decision-making disclosure duty, graded CONFIRMED / UNSETTLED / REASONED VIEW against the canonical Privacy Act 1988 (Cth) position as at 2 July 2026."
-resource: "directors-guide-hard-error-register.md (source audit, supplied by bundle owner)"
+description: "Seven audited errors and gaps in the Guide's treatment of the Privacy Act automated-decision-making disclosure duty, graded CONFIRMED / UNSETTLED / REASONED VIEW against the canonical Privacy Act 1988 (Cth) position as at 13 July 2026 (re-audited against privacy-act-okf Log head 2026-07-06)."
+resource: "directors-guide-hard-error-register.md (source audit, supplied by bundle owner); privacy-act-okf (legal authority)"
 tags: ["errata", "regulatory", "privacy", "review-required"]
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-13T02:45:00Z
 ---
 
 # Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide
@@ -16,6 +16,11 @@ timestamp: 2026-07-03T02:55:56Z
 > (enacted wording / explicit OAIC or Explanatory Memorandum statement), **UNSETTLED**
 > (awaiting OAIC binding guidance, expected ~September 2026), **REASONED VIEW**
 > (inference or advisory material, not itself enacted text).
+>
+> **Legal authority.** Canonical Privacy Act APP 1.7–1.9 positions (including penalty
+> figures) are re-audited against the companion bundle `privacy-act-okf` (master projection
+> Log head **2026-07-06** as of this update). This register records Guide errors; it does
+> not invent a second statutory position.
 >
 > This is information to support a decision, not legal advice. Before any external claim
 > or compliance position is relied on, have it confirmed by a qualified Australian privacy
@@ -97,10 +102,23 @@ penalty units = A$364,000 per contravention)** for a body corporate. Broader int
 penalties escalate through **s 13H (10,000 penalty units = A$3.64M)** and **s 13G**
 (serious/repeated). On s 13G, note the correction most relevant to this Guide's mid-market
 readers: **below roughly A$167M turnover the 30%-of-turnover limb, not the A$50M figure, is
-the operative maximum** — e.g. about A$4.2M for a A$14M-turnover company. A director's
-guide that gives the deadline but not the enforcement mechanics leaves boards unable to
-weigh the risk it is asking them to govern. *(Classified as a hard gap rather than a
-misstatement — nothing wrong is asserted; the decisive facts are absent.)*
+the operative maximum**.
+
+**Worked case — A$14M-turnover APP entity (do not conflate the tiers):**
+
+| Mechanism | Amount at A$14M turnover |
+|---|---|
+| Infringement notice s 80UB (unlisted corp) | **A$21,840** (60 PU) |
+| Specified APP / privacy-policy breach s 13K | **A$364,000** per contravention |
+| Interference, not serious/repeated s 13H | **A$3.64M** |
+| Serious/repeated interference s 13G (30% limb) | ≈ **A$4.2M** |
+
+A privacy-policy failure is typically an **s 13K** exposure, not an automatic **s 13G**
+maximum. Credible single-proceeding worst case at this turnover sits in the **low-to-mid
+single-digit millions**, not A$50M. A director's guide that gives the deadline but not the
+enforcement mechanics leaves boards unable to weigh the risk it is asking them to govern.
+*(Classified as a hard gap rather than a misstatement — nothing wrong is asserted; the
+decisive facts are absent.)*
 
 ## HE-5 — The statutory term "computer program" is never surfaced (throughout)
 

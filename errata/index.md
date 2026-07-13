@@ -6,7 +6,7 @@ Documented errors and gaps in *A Director's Guide to AI Governance* (AICD/HTI, v
 
 ## Errata
 
-* [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](privacy-act-hard-error-register.md) — Seven audited errors and gaps in the Guide's treatment of the Privacy Act automated-decision-making disclosure duty, graded CONFIRMED / UNSETTLED / REASONED VIEW against the canonical Privacy Act 1988 (Cth) position as at 2 July 2026.
+* [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](privacy-act-hard-error-register.md) — Seven audited errors and gaps in the Guide's treatment of the Privacy Act automated-decision-making disclosure duty, graded CONFIRMED / UNSETTLED / REASONED VIEW against the canonical Privacy Act 1988 (Cth) position as at 13 July 2026 (re-audited against privacy-act-okf Log head 2026-07-06).
 
 ## Coverage Ledgers
 

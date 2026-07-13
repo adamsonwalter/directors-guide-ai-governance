@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Board AI Oversight — Live Diagnostic Workshop</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #ffffff;
+    --panel: #f7f6f3;
+    --border: #d8d5cd;
+    --text: #1c1b19;
+    --meta: #6b6860;
+    --accent: #1f3d3d;
+    --accent-soft: #e7efee;
+    --confirmed: #1c6b3f;
+    --confirmed-bg: #e5f3ea;
+    --unsettled: #92610a;
+    --unsettled-bg: #fbf0dc;
+    --reasoned: #3a4a8a;
+    --reasoned-bg: #ecefff;
+    --danger: #a3241e;
+    --danger-bg: #fbe9e7;
+    font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+  body { font-size: 16px; line-height: 1.5; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 24px; }
+  header.top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 2px solid var(--accent); padding-bottom: 16px; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 16px;
+  }
+  header.top h1 { margin: 0 0 4px; font-size: 26px; color: var(--accent); }
+  header.top .sub { color: var(--meta); font-size: 14px; }
+  .session-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: end; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--meta); }
+  .field input, .field select { padding: 8px 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; min-width: 140px; }
+  button { cursor: pointer; font-family: inherit; }
+  .btn { background: var(--accent); color: #fff; border: none; border-radius: 4px; padding: 10px 16px; font-size: 14px; font-weight: 600; }
+  .btn.secondary { background: #fff; color: var(--accent); border: 1px solid var(--accent); }
+  .btn.small { padding: 6px 10px; font-size: 12px; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .grid { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 24px; align-items: start; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .panel h2 { margin: 0 0 4px; font-size: 17px; color: var(--accent); }
+  .panel .panel-sub { font-size: 12.5px; color: var(--meta); margin-bottom: 14px; }
+  .badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 3px; }
+  .badge.confirmed { background: var(--confirmed-bg); color: var(--confirmed); }
+  .badge.unsettled { background: var(--unsettled-bg); color: var(--unsettled); }
+  .badge.reasoned { background: var(--reasoned-bg); color: var(--reasoned); }
+  .badge.danger { background: var(--danger-bg); color: var(--danger); }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--meta); }
+  .ladder-table td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .step { border: 1px solid var(--border); border-radius: 6px; padding: 14px; margin-bottom: 10px; background: #fff; }
+  .step.hidden { display: none; }
+  .step .q { font-weight: 600; margin-bottom: 4px; }
+  .step .hint { font-size: 12.5px; color: var(--meta); margin-bottom: 10px; }
+  .step .answers button { margin-right: 8px; padding: 8px 18px; border: 1px solid var(--border); border-radius: 4px; background: #fff; font-size: 13.5px; }
+  .step .answers button.yes.active { background: var(--confirmed-bg); border-color: var(--confirmed); color: var(--confirmed); }
+  .step .answers button.no.active { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+  .result-box { border-radius: 6px; padding: 16px; margin-top: 12px; border: 1px solid var(--border); }
+  .result-box.trigger { background: var(--danger-bg); border-color: var(--danger); }
+  .result-box.no-trigger { background: var(--confirmed-bg); border-color: var(--confirmed); }
+  .result-box h3 { margin: 0 0 8px; font-size: 15px; }
+  .result-box ul { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; }
+  .ledger-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .stat-row { display: flex; gap: 16px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px 16px; min-width: 110px; }
+  .stat .n { font-size: 22px; font-weight: 700; color: var(--accent); }
+  .stat .l { font-size: 11px; color: var(--meta); text-transform: uppercase; letter-spacing: 0.04em; }
+  .chat-log { height: 220px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 10px; margin-bottom: 10px; font-size: 13.5px; }
+  .chat-msg { margin-bottom: 10px; }
+  .chat-msg .who { font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--meta); }
+  .chat-msg.facilitator .who { color: var(--accent); }
+  .chat-row { display: flex; gap: 8px; }
+  .chat-row input { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+  .flag-note { font-size: 12.5px; padding: 8px 10px; border-radius: 4px; margin-top: 8px; }
+  .flag-note.tort { background: var(--reasoned-bg); color: var(--reasoned); }
+  .flag-note.s180 { background: var(--unsettled-bg); color: var(--unsettled); }
+  .presenting .panel { font-size: 1.35em; }
+  .presenting .panel h2 { font-size: 1.5em; }
+  .presenting .step .answers button { font-size: 1.1em; padding: 14px 26px; }
+  footer.foot { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--meta); text-align: center; }
+  .disclaimer { font-size: 11.5px; color: var(--meta); margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+  .toolbar { display:flex; gap:8px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app-root">
+
+  <header class="top">
+    <div>
+      <h1>Board AI Oversight — Live Diagnostic Workshop</h1>
+      <div class="sub">Privacy Act ADM applicability test · penalty ladder · statutory tort &amp; s180 stepping-stone flags · cumulative session ledger</div>
+    </div>
+    <div class="session-meta">
+      <div class="field"><label>Organisation</label><input id="orgName" placeholder="Client Pty Ltd"></div>
+      <div class="field"><label>Annual turnover (A$)</label><input id="orgTurnover" type="number" placeholder="e.g. 14000000"></div>
+      <div class="field"><label>Listed?</label>
+        <select id="orgListed"><option value="no">Unlisted</option><option value="yes">Listed</option></select>
+      </div>
+      <button class="btn secondary small" id="presentToggle">Presentation mode</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <div>
+      <!-- TOOL INTAKE + ADM WIZARD -->
+      <div class="panel">
+        <h2>Step 1 — Tool / decision-flow intake</h2>
+        <div class="panel-sub">One pass per tool, system, spreadsheet or rules engine that touches a decision about a person. "Computer program" is the statutory term — not "AI tool".</div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Tool / decision-flow name</label>
+          <input id="toolName" placeholder="e.g. Candidate screening scorecard (Excel)" style="width:100%;">
+        </div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Short description</label>
+          <input id="toolDesc" placeholder="What it does, who it affects, what data goes in" style="width:100%;">
+        </div>
+        <button class="btn" id="startTest">Start applicability test</button>
+      </div>
+
+      <div class="panel" id="wizardPanel" style="display:none;">
+        <h2>Step 2 — APP 1.7–1.9 applicability test</h2>
+        <div class="panel-sub">Fixed order. Stop at the first NO. <span class="badge confirmed">CONFIRMED</span> unless flagged otherwise.</div>
+        <div id="steps"></div>
+        <div id="resultBox"></div>
+        <div style="margin-top:14px; display:flex; gap:8px;">
+          <button class="btn secondary small" id="resetWizard">Reset this tool</button>
+          <button class="btn small" id="addToLedger" style="display:none;">Add to session ledger</button>
+        </div>
+      </div>
+
+      <!-- Q&A / CHAT PANEL -->
+      <div class="panel">
+        <h2>Facilitator Q&amp;A</h2>
+        <div class="panel-sub">Answers are generated live from the session's embedded knowledge corpus (ADM test, penalties, statutory tort, s180). Not a substitute for counsel on anything the board will rely on. Requires <code>window.cowork.askClaude</code> — falls back to a static lookup if unavailable.</div>
+        <div class="chat-log" id="chatLog"></div>
+        <div class="chat-row">
+          <input id="chatInput" placeholder="e.g. Does a human sign-off remove the duty?">
+          <button class="btn" id="chatSend">Ask</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <!-- PENALTY LADDER -->
+      <div class="panel">
+        <h2>Penalty ladder <span class="badge confirmed">CONFIRMED</span></h2>
+        <div class="panel-sub">A$364 / penalty unit from 1 July 2026. Scales automatically to the turnover entered above.</div>
+        <table class="ladder-table">
+          <tr><th>Mechanism</th><th>Trigger</th><th class="num">Amount</th></tr>
+          <tr><td>OAIC infringement notice (no court) — s80UB</td><td>Deficient privacy policy, unlisted body corporate</td><td class="num">60 PU = $21,840</td></tr>
+          <tr><td>OAIC infringement notice — s80UB(1A)</td><td>Listed corporation</td><td class="num">200 PU = $72,800</td></tr>
+          <tr><td>OAIC infringement notice — individual</td><td>Individual respondent</td><td class="num">12 PU = $4,368</td></tr>
+          <tr><td>Federal Court civil penalty — s13K</td><td>Per contravention (incl. privacy policy)</td><td class="num">1,000 PU = $364,000</td></tr>
+          <tr><td>Interference with privacy — s13H</td><td>Broader interference finding</td><td class="num">10,000 PU = $3.64M</td></tr>
+          <tr><td>Serious / repeated interference — s13G</td><td>Greater of $50M / 3× benefit / 30% adjusted turnover</td><td class="num" id="s13gResult">—</td></tr>
+        </table>
+        <div class="flag-note s180" id="turnoverNote" style="display:none;"></div>
+      </div>
+
+      <!-- STATUTORY TORT + S180 -->
+      <div class="panel">
+        <h2>Parallel exposure (not the ADM test)</h2>
+        <div class="panel-sub">Live since these are part of the same 2024 reform package, not "adjacent regimes" — always in view alongside the disclosure duty.</div>
+        <div style="margin-bottom:14px;">
+          <span class="badge confirmed">CONFIRMED</span> <strong>Statutory tort — serious invasions of privacy</strong> (in force 10 Jun 2025).
+          Individuals only may sue; intentional or reckless conduct (not mere negligence); damages capped at the greater of $478,550 or the defamation non-economic-loss cap; 1-year-from-awareness / 3-year limitation. Relevant to biometric, facial-recognition or covert-monitoring deployments.
+        </div>
+        <div>
+          <span class="badge confirmed">CONFIRMED</span> <strong>Director stepping-stone liability — s180 Corporations Act</strong>.
+          ASIC Report 798 (Oct 2024): directors must discharge care and diligence duties over AI adoption, deployment and use, and be aware of foreseeable risk. Not having an inventory is itself evidence of the gap — ignorance is not a defence to s180 once the risk is foreseeable and known industry-wide.
+        </div>
+      </div>
+
+      <!-- LEDGER -->
+      <div class="panel">
+        <h2>Cumulative session ledger</h2>
+        <div class="panel-sub">Persists in this browser for the session. Sync to hand it to the facilitator running the live Cowork chat for the board report.</div>
+        <div class="stat-row">
+          <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Tools assessed</div></div>
+          <div class="stat"><div class="n" id="statTriggered">0</div><div class="l">Disclosure triggered</div></div>
+          <div class="stat"><div class="n" id="statTort">0</div><div class="l">Tort flags</div></div>
+        </div>
+        <div class="ledger-controls">
+          <button class="btn small" id="copyLedger">Copy session ledger</button>
+          <button class="btn secondary small" id="downloadLedger">Download .json</button>
+          <button class="btn secondary small" id="clearLedger">Clear session</button>
+        </div>
+        <table id="ledgerTable">
+          <tr><th>Tool</th><th>Outcome</th><th>Decided by</th><th>Confidence</th></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    Decision-support information, not legal advice. Confirm any position relied on externally with qualified Australian privacy counsel, particularly UNSETTLED points pending OAIC binding guidance (expected ~September 2026). Anchored to the AICD/HTI <em>Director's Guide to AI Governance</em> (v2, June 2026), used under CC BY-NC-SA 4.0, and this project's corrected knowledge bundle (<code>directors-guide-ai-governance</code>).
+  </div>
+
+  <footer class="foot">
+    © 2026 Walter Adamson | BHP 20 years, Head IT Audit · IT Strategy · Corporate Planning · International Bus Development | 100+ AI workflow solutions delivered | linkedin.com/in/adamson | walter@outcomesnow.com
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- Grounded knowledge corpus (condensed from the OKF bundle) ----------
+  var CORPUS = [
+    "PRIVACY ACT ADM DISCLOSURE DUTY (from 10 December 2026): privacy policies must disclose, at the level of KINDS only (not per-decision records): (1) kinds of personal information used to run the program; (2) kinds of decisions made SOLELY by the program; (3) kinds of decisions the program does a thing SUBSTANTIALLY AND DIRECTLY RELATED to making — i.e. human-assisted decisions where a person signs off but the program did the substantive work. This is a privacy-POLICY disclosure duty, not an individual-notification duty and not a right to contest a decision.",
+    "TRIGGER TEST (APP 1.7-1.9), stop at first NO: (0) APP entity — turnover >$3M OR caught regardless (health service provider holding health info, trades in personal information, Commonwealth contracted service provider, residential tenancy database operator); (1) personal information used to run the program (genuine de-identification exits here; reversible pseudonymisation does not); (2) decision could reasonably be expected to SIGNIFICANTLY affect the person's rights or interests (more than trivial, adverse OR beneficial); (3) organisation arranged for the program to make the decision, or to do a thing SUBSTANTIALLY AND DIRECTLY RELATED to making it (this margin is UNSETTLED, pending OAIC binding guidance ~September 2026); (4) exemption check.",
+    "A HUMAN SIGN-OFF DOES NOT REMOVE THE DUTY where the program's output is a substantial, direct factor in the decision. This defeats the common assumption 'a human signs off, so we're fine'.",
+    "TECHNOLOGY-NEUTRAL SCOPE: the statutory term is 'computer program', not 'AI'. The Explanatory Memorandum confirms scope spans pre-programmed rule-based processes as well as AI/ML. The OAIC's May 2026 Issues Paper treats spreadsheets such as Excel as within scope. Inventorying only 'where do we use AI' under-captures exposure.",
+    "EMPLOYEE RECORDS EXEMPTION (s7B(3)) covers CURRENT AND FORMER EMPLOYEES ONLY. It does NOT cover job applicants (a common AI-recruitment-screening trigger), volunteers, government employers, or third-party HR/payroll/ATS vendors. Collection of sensitive employee data must separately satisfy APP 3 (Lee v Superior Wood [2019] FWCFB 2434).",
+    "PENALTIES (A$364/penalty unit from 1 July 2026): OAIC infringement notice without court, s80UB — 60 PU ($21,840) unlisted body corporate, 200 PU ($72,800) listed, 12 PU ($4,368) individual. Federal Court civil penalty s13K (incl. privacy policy breaches) — 1,000 PU ($364,000) per contravention. Interference with privacy s13H — 10,000 PU ($3.64M). Serious/repeated interference s13G — greater of $50M, 3x benefit obtained, or 30% of adjusted turnover; below roughly $167M turnover the 30%-of-turnover limb is the operative maximum. Worked case at $14M turnover — do not conflate tiers: s80UB unlisted $21,840; s13K $364,000; s13H $3.64M; s13G ≈ $4.2M. A privacy-policy failure is typically s13K exposure, not an automatic s13G maximum.",
+    "BOARD-USE BOUNDARY: using AI to digest board papers, minutes, or pack material for the board's own governance work is not, by itself, an APP 1.7 trigger. The ADM disclosure duty applies where a computer program makes, or substantially and directly assists in making, a decision about an identifiable individual using that person's personal information. Do not conflate Corporations Act board-process risk (e.g. ASIC v Bekier, s180) with the Privacy Act ADM test unless those individual-decision conditions are met.",
+    "STATUTORY TORT for serious invasions of privacy has been in force since 10 June 2025 (Privacy and Other Legislation Amendment Act 2024, sch 2) — a separate mechanism from the ADM disclosure duty. Only individuals (not corporations) may sue, any individual or organisation may be a defendant, the conduct must be intentional or reckless (not mere negligence), damages for non-economic loss are capped at the greater of $478,550 or the defamation cap, and claims must be brought within 1 year of awareness or 3 years of the invasion. Journalists and law enforcement carry exemptions. Relevant to biometric/facial recognition or covert monitoring without valid consent.",
+    "BUNNINGS GROUP LIMITED AND PRIVACY COMMISSIONER [2026] ARTA 130: the Administrative Review Tribunal upheld Bunnings' facial recognition use as lawful under the 'permitted general situation' test, but affirmed the Commissioner's finding that Bunnings breached APP 1 (open and transparent management) and APP 5 (notification of collection) when it rolled out the technology. Not a penalty case — a lawfulness/process case.",
+    "DIRECTOR DUTY OF CARE AND DILIGENCE — s180 Corporations Act 2001: ASIC Report 798 ('Beware the gap', October 2024) states director duties extend to the adoption, deployment and use of AI, including awareness of AI use within the company and reasonably foreseeable risks. This underpins 'stepping stone' liability — a governance failure (e.g. no tool/decision inventory, no oversight of a known compliance risk) can itself be the breach of a director's own duty, independent of whether the underlying law is separately breached.",
+    "ASIC v Bekier (Liability Judgment) [2026] FCA 196: on AI used by the board itself, Justice Lee cautioned against 'quiet normalisation' of private director reliance on AI-generated distillations of board papers, unregulated by any agreed policy — directors should not substitute AI summaries for their own review.",
+    "UNSETTLED (pending OAIC binding guidance ~September 2026, roughly 3 months before the 10 December 2026 compliance date): the precise meaning of 'substantially and directly related'; the drafting standard a privacy policy must meet (a generic 'we may use automated tools' line does not meet it); and who has 'arranged for' a program in a vendor/SaaS supply chain."
+  ].join("\n\n");
+
+  // ---------- State ----------
+  var ADM_STEPS = [
+    { id: "app_entity", q: "Is the organisation an APP entity?", hint: "Turnover above A$3M, OR smaller but caught regardless: health-service provider holding health info, trades in personal information, Commonwealth contracted service provider, residential-tenancy-database operator.", conf: "confirmed" },
+    { id: "pi_used", q: "Is personal information about the individual used in running the program?", hint: "Genuine de-identification exits here. Reversible pseudonymisation does NOT exit here.", conf: "confirmed" },
+    { id: "sig_effect", q: "Could the decision reasonably be expected to significantly affect the person's rights or interests?", hint: "More than trivial. Captures both adverse AND beneficial effects (APP 1.7(b), APP 1.9(c)).", conf: "confirmed" },
+    { id: "arranged", q: "Did the organisation arrange for a computer program to make the decision, or to do a thing substantially and directly related to making it?", hint: "Includes human-assisted decisions where a person signs off but the program did the substantive work. The 'substantially and directly related' margin is UNSETTLED pending OAIC guidance (~Sept 2026).", conf: "unsettled" },
+    { id: "no_exemption", q: "Does an exemption apply? (Answer YES if NO exemption applies — i.e. YES continues the test)", hint: "Employee-records exemption (s7B(3)) covers current/former employees ONLY — not applicants, volunteers, government employers, or third-party HR vendors. Genuine de-identification also exits earlier at step 2.", conf: "confirmed" }
+  ];
+
+  var current = { answers: {}, stepIndex: 0, done: false, outcome: null };
+  var ledger = [];
+
+  function $(id){ return document.getElementById(id); }
+
+  function loadLedger(){
+    try {
+      var raw = localStorage.getItem("boardWorkshopLedger");
+      ledger = raw ? JSON.parse(raw) : [];
+    } catch(e){ ledger = []; }
+  }
+  function saveLedger(){
+    try { localStorage.setItem("boardWorkshopLedger", JSON.stringify(ledger)); } catch(e){}
+  }
+
+  function penaltyUnit(){ return 364; }
+
+  function updatePenaltyLadder(){
+    var turnover = parseFloat($("orgTurnover").value) || 0;
+    var thirtyPct = turnover * 0.30;
+    var maxOf = Math.max(50000000, thirtyPct); // 3x-benefit limb not computable without benefit figure — shown as note
+    var operative = turnover > 0 ? Math.max(50000000, thirtyPct) : null;
+    var note = $("turnoverNote");
+    if (turnover > 0) {
+      var thirtyStr = "$" + Math.round(thirtyPct).toLocaleString();
+      var opStr = "$" + Math.round(operative).toLocaleString();
+      $("s13gResult").textContent = opStr + " (30% limb)";
+      note.style.display = "block";
+      if (turnover < 167000000) {
+        note.textContent = "At A$" + turnover.toLocaleString() + " turnover, the 30%-of-turnover limb (" + thirtyStr + ") is the operative s13G maximum — below the A$50M floor only if 30% exceeds it, otherwise A$50M applies. Below ~A$167M turnover the 30% limb is generally the driver once it exceeds A$50M.";
+      } else {
+        note.textContent = "At A$" + turnover.toLocaleString() + " turnover, the 30%-of-turnover limb (" + thirtyStr + ") likely exceeds A$50M and is the operative s13G maximum, subject to the 3×-benefit limb if larger.";
+      }
+    } else {
+      $("s13gResult").textContent = "greater of $50M / 3× benefit / 30% turnover";
+      note.style.display = "none";
+    }
+  }
+
+  // ---------- Wizard rendering ----------
+  function renderSteps(){
+    var html = "";
+    ADM_STEPS.forEach(function(step, i){
+      var visible = i <= current.stepIndex;
+      var ans = current.answers[step.id];
+      html += '<div class="step' + (visible ? '' : ' hidden') + '" data-step="' + step.id + '">';
+      html += '<div class="q">' + (i+1) + '. ' + step.q + ' <span class="badge ' + step.conf + '">' + step.conf.toUpperCase() + '</span></div>';
+      html += '<div class="hint">' + step.hint + '</div>';
+      html += '<div class="answers">';
+      html += '<button class="yes' + (ans === true ? ' active' : '') + '" data-step="' + step.id + '" data-val="yes">YES</button>';
+      html += '<button class="no' + (ans === false ? ' active' : '') + '" data-step="' + step.id + '" data-val="no">NO</button>';
+      html += '</div></div>';
+    });
+    $("steps").innerHTML = html;
+    Array.prototype.forEach.call(document.querySelectorAll(".answers button"), function(btn){
+      btn.addEventListener("click", function(){
+        var stepId = btn.getAttribute("data-step");
+        var val = btn.getAttribute("data-val") === "yes";
+        current.answers[stepId] = val;
+        var stepIdx = ADM_STEPS.findIndex(function(s){ return s.id === stepId; });
+        if (!val) {
+          finishWizard(stepIdx, false);
+        } else if (stepIdx === ADM_STEPS.length - 1) {
+          finishWizard(stepIdx, true);
+        } else {
+          current.stepIndex = stepIdx + 1;
+          renderSteps();
+        }
+      });
+    });
+  }
+
+  function finishWizard(decidingStepIdx, passed){
+    current.done = true;
+    var decidingStep = ADM_STEPS[decidingStepIdx];
+    var box = $("resultBox");
+    if (!passed) {
+      current.outcome = { triggered: false, decidedBy: decidingStep.q, confidence: decidingStep.conf };
+      box.innerHTML = '<div class="result-box no-trigger"><h3>No disclosure trigger — test stops here</h3>' +
+        '<p>Decided by: <strong>' + decidingStep.q + '</strong> — answered NO.</p>' +
+        '<p><span class="badge ' + decidingStep.conf + '">' + decidingStep.conf.toUpperCase() + '</span></p></div>';
+    } else {
+      current.outcome = { triggered: true, decidedBy: "All five conditions satisfied", confidence: "confirmed" };
+      box.innerHTML = '<div class="result-box trigger"><h3>Disclosure duty triggered — APP 1.8</h3>' +
+        '<p>The privacy policy must set out, at a KINDS level:</p>' +
+        '<ul><li>kinds of personal information the program uses</li>' +
+        '<li>kinds of decisions made SOLELY by the program</li>' +
+        '<li>kinds of decisions the program SUBSTANTIALLY AND DIRECTLY helps make</li></ul>' +
+        '<p><span class="badge confirmed">CONFIRMED test</span> <span class="badge unsettled">UNSETTLED drafting standard</span></p></div>';
+    }
+    $("addToLedger").style.display = "inline-block";
+  }
+
+  $("startTest").addEventListener("click", function(){
+    if (!$("toolName").value.trim()) { alert("Enter a tool / decision-flow name first."); return; }
+    current = { answers: {}, stepIndex: 0, done: false, outcome: null };
+    $("wizardPanel").style.display = "block";
+    $("addToLedger").style.display = "none";
+    $("resultBox").innerHTML = "";
+    renderSteps();
+    $("wizardPanel").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+
+  $("resetWizard").addEventListener("click", function(){
+    current = { answers: {}, stepIndex: 0, done: false, outcome: null };
+    $("resultBox").innerHTML = "";
+    $("addToLedger").style.display = "none";
+    renderSteps();
+  });
+
+  $("addToLedger").addEventListener("click", function(){
+    if (!current.outcome) return;
+    ledger.push({
+      tool: $("toolName").value.trim(),
+      desc: $("toolDesc").value.trim(),
+      outcome: current.outcome.triggered ? "Disclosure triggered" : "No trigger",
+      decidedBy: current.outcome.decidedBy,
+      confidence: current.outcome.confidence,
+      timestamp: new Date().toISOString()
+    });
+    saveLedger();
+    renderLedger();
+    $("toolName").value = ""; $("toolDesc").value = "";
+    $("wizardPanel").style.display = "none";
+  });
+
+  // ---------- Ledger rendering ----------
+  function renderLedger(){
+    var rows = '<tr><th>Tool</th><th>Outcome</th><th>Decided by</th><th>Confidence</th></tr>';
+    ledger.forEach(function(row){
+      rows += '<tr><td>' + escapeHtml(row.tool) + '</td>' +
+        '<td>' + escapeHtml(row.outcome) + '</td>' +
+        '<td>' + escapeHtml(row.decidedBy) + '</td>' +
+        '<td><span class="badge ' + row.confidence + '">' + row.confidence.toUpperCase() + '</span></td></tr>';
+    });
+    $("ledgerTable").innerHTML = rows;
+    $("statTotal").textContent = ledger.length;
+    $("statTriggered").textContent = ledger.filter(function(r){ return r.outcome === "Disclosure triggered"; }).length;
+    $("statTort").textContent = ledger.filter(function(r){ return /tort/i.test(r.decidedBy); }).length;
+  }
+
+  function escapeHtml(s){
+    return String(s || "").replace(/[&<>"']/g, function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+
+  function ledgerToMarkdown(){
+    var org = $("orgName").value.trim() || "(organisation not entered)";
+    var turnover = $("orgTurnover").value || "(not entered)";
+    var md = "# Board AI Oversight — Session Ledger\n\n";
+    md += "Organisation: " + org + "\nTurnover entered: A$" + turnover + "\nGenerated: " + new Date().toISOString() + "\n\n";
+    md += "| Tool | Outcome | Decided by | Confidence |\n|---|---|---|---|\n";
+    ledger.forEach(function(r){
+      md += "| " + r.tool + " | " + r.outcome + " | " + r.decidedBy + " | " + r.confidence.toUpperCase() + " |\n";
+    });
+    md += "\nTotal tools assessed: " + ledger.length + "\nDisclosure triggered: " + ledger.filter(function(r){return r.outcome==="Disclosure triggered";}).length + "\n";
+    return md;
+  }
+
+  $("copyLedger").addEventListener("click", function(){
+    var payload = ledgerToMarkdown() + "\n\n---\nJSON:\n" + JSON.stringify(ledger, null, 2);
+    navigator.clipboard.writeText(payload).then(function(){
+      alert("Session ledger copied. Paste it into the live Cowork chat and say 'sync ledger' — that's the click that hands it to the session running the report.");
+    }, function(){
+      prompt("Copy failed automatically — copy manually:", payload);
+    });
+  });
+
+  $("downloadLedger").addEventListener("click", function(){
+    var blob = new Blob([JSON.stringify(ledger, null, 2)], {type: "application/json"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = "board-workshop-ledger-" + new Date().toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  $("clearLedger").addEventListener("click", function(){
+    if (confirm("Clear the entire session ledger? This cannot be undone.")) {
+      ledger = []; saveLedger(); renderLedger();
+    }
+  });
+
+  // ---------- Presentation mode ----------
+  $("presentToggle").addEventListener("click", function(){
+    document.body.classList.toggle("presenting");
+  });
+
+  // ---------- Chat / Q&A panel ----------
+  function addChatMsg(who, text){
+    var log = $("chatLog");
+    var div = document.createElement("div");
+    div.className = "chat-msg" + (who === "Facilitator" ? " facilitator" : "");
+    div.innerHTML = '<div class="who">' + who + '</div><div>' + escapeHtml(text) + '</div>';
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function staticFallback(question){
+    var q = question.toLowerCase();
+    if (q.indexOf("human") > -1 && q.indexOf("sign") > -1) {
+      return "No. A human sign-off does not remove the duty where the program's output is a substantial, direct factor in the decision.";
+    }
+    if (q.indexOf("employee") > -1 || q.indexOf("applicant") > -1) {
+      return "The employee-records exemption (s7B(3)) covers current and former employees only — not applicants, volunteers, government employers, or third-party HR vendors.";
+    }
+    if (q.indexOf("penalty") > -1 || q.indexOf("fine") > -1) {
+      return "s80UB infringement notice: 60 PU ($21,840) unlisted, 200 PU ($72,800) listed, 12 PU ($4,368) individual. s13K civil penalty: 1,000 PU ($364,000) per contravention. s13H: 10,000 PU ($3.64M). s13G serious/repeated: greater of $50M / 3x benefit / 30% turnover. At $14M turnover: s13K $364k; s13H $3.64M; s13G ≈ $4.2M — do not conflate a privacy-policy breach with the s13G maximum.";
+    }
+    if (q.indexOf("tort") > -1) {
+      return "The statutory tort for serious invasions of privacy has been in force since 10 June 2025. Individuals only may sue; conduct must be intentional or reckless; damages capped at the greater of $478,550 or the defamation non-economic-loss cap.";
+    }
+    if (q.indexOf("180") > -1 || q.indexOf("director") > -1) {
+      return "ASIC Report 798 (Oct 2024) confirms s180 duty of care and diligence extends to AI adoption, deployment and use. Not having an inventory is itself evidence of the gap — this is 'stepping stone' liability.";
+    }
+    return "Not confidently covered by this session's embedded corpus — flag for follow-up with counsel. Try asking about: the applicability test, exemptions, penalties, the statutory tort, or director duties.";
+  }
+
+  function askLive(question){
+    if (window.cowork && typeof window.cowork.askClaude === "function") {
+      return window.cowork.askClaude(
+        "You are the live facilitator assistant for a board AI-oversight workshop. Answer ONLY from the corpus provided. " +
+        "If the answer is not in the corpus, say so plainly and suggest referring it to counsel. Be direct, cite the confidence " +
+        "grade (CONFIRMED / UNSETTLED / REASONED VIEW) where the corpus states one. This is decision-support information, not legal advice.\n\n" +
+        "QUESTION: " + question,
+        [CORPUS]
+      ).then(function(res){
+        if (typeof res === "string") return res;
+        if (res && res.content) return Array.isArray(res.content) ? res.content.map(function(c){return c.text||"";}).join(" ") : String(res.content);
+        return JSON.stringify(res);
+      }).catch(function(){
+        return staticFallback(question);
+      });
+    }
+    return Promise.resolve(staticFallback(question));
+  }
+
+  $("chatSend").addEventListener("click", sendChat);
+  $("chatInput").addEventListener("keydown", function(e){ if (e.key === "Enter") sendChat(); });
+
+  function sendChat(){
+    var input = $("chatInput");
+    var q = input.value.trim();
+    if (!q) return;
+    addChatMsg("Facilitator", q);
+    input.value = "";
+    addChatMsg("Assistant", "…thinking…");
+    askLive(q).then(function(answer){
+      var log = $("chatLog");
+      log.removeChild(log.lastChild);
+      addChatMsg("Assistant", answer);
+    });
+  }
+
+  // ---------- Init ----------
+  $("orgTurnover").addEventListener("input", updatePenaltyLadder);
+  loadLedger();
+  renderLedger();
+  updatePenaltyLadder();
+  addChatMsg("Assistant", "Ready. Ask about the applicability test, exemptions, penalties, the statutory tort, or director duties — or step through a tool on the left.");
+})();
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@ description: Single source of truth for all concept types, relationship semantic
 memory_tier: semantic
 confidence: 1.0
 okf_version: "0.1"
-timestamp: 2026-07-03T05:20:08Z
+timestamp: 2026-07-13T03:05:00Z
 tags: [ontology, system, governance]
 ---
 
@@ -204,7 +204,7 @@ CONFORMANCE_AGENT checks these rules in addition to OKF v0.1 base conformance (�
 
 | Contract ID | Deliverable file | Source scope | Identity key | Severity |
 |---|---|---|---|---|
-| *(none at bundle initialisation — register the first time a hand-authored deliverable snapshots concept data; see worked example below)* | — | — | — | — |
+| `board-workshop-diagnostic` | `deliverables/board-workshop-diagnostic.html` | `foundations/privacy-act-adm-disclosure.md` (APP 1.7 five-step `ADM_STEPS` + APP 1.8 three-limb outcome text + board-use boundary), `errata/privacy-act-hard-error-register.md` (penalty ladder figures including HE-4 $14M three-tier split, HE-3/HE-5 exemption and technology-scope content), `foundations/regulatory-obligations-appendix-a.md` (statutory tort paragraph), `foundations/board-role-regulatory-landscape.md` (s180 / ASIC Report 798 / ASIC v Bekier paragraph) | The five `ADM_STEPS[].id` values (`app_entity`, `pi_used`, `sig_effect`, `arranged`, `no_exemption`) against the APP 1.7 gate order in `privacy-act-adm-disclosure.md`; the six `.ladder-table` penalty rows against HE-4's penalty-unit figures (incl. s13K/s13H/s13G separation) | ERROR |
 
 **Worked example** (illustrative only — this is not a live contract in this seed ontology; shown
 so a domain builder can copy the pattern exactly):
@@ -269,6 +269,36 @@ CONFORMANCE_AGENT should treat a `Coverage Ledger` row marked anything other tha
 
 ---
 
+# Cross-Bundle Authority Contracts
+
+> **Purpose.** This bundle is a board-facing Guide ontology. Where it states Privacy Act
+> APP 1.7–1.9 legal positions, it must not invent a second statutory story. The companion
+> `privacy-act-okf` bundle is the legal authority for those provisions. This section
+> registers that dependency so a future agent re-audits after the authority moves, instead
+> of assuming the 2026-07-03 hard-error corrections remain current forever.
+
+**Format** — one row per external authority this bundle depends on for legal facts:
+
+| Field | Meaning |
+|---|---|
+| `Contract ID` | Short slug identifying the contract. |
+| `Authority bundle` | Path or name of the governing knowledge bundle. |
+| `Authority artifact` | Projection or concept set to re-audit against (with Log head / knowledge cutoff). |
+| `Dependent surfaces` | Files in *this* bundle that must not contradict the authority. |
+| `Re-audit triggers` | Events that require a fresh Match/Gap/Fix pass. |
+| `Severity` | `ERROR` if contradiction would mislead a board workshop or client deliverable. |
+
+| Contract ID | Authority bundle | Authority artifact | Dependent surfaces | Re-audit triggers | Severity |
+|---|---|---|---|---|---|
+| `privacy-act-okf-adm` | `privacy-act-okf` (sibling repo) | `projections/privacy-act-adm-master.md` (Log head **2026-07-06** at last sync; knowledge cutoff per that bundle's AGENTS.MD) | `foundations/privacy-act-adm-disclosure.md`; `errata/privacy-act-hard-error-register.md`; `deliverables/board-workshop-diagnostic.html` (CORPUS / ADM_STEPS / penalty ladder); `PROJECT_INSTRUCTIONS.md` hard constraints | Authority Log head advances; OAIC Sep 2026 binding guidance ingested into the authority; any edit to HE / penalty / exemption / APP 1.7–1.8 wording in this bundle | ERROR |
+
+**Rule.** Privacy Act legal claims in this bundle must not contradict `privacy-act-okf`
+**confirmed** concepts. Contested / UNSETTLED items in this bundle stay UNSETTLED until the
+authority re-grades them. Board framing, Guide errata narrative, and operating-model voice
+remain this bundle's job — only the statutory facts follow the authority.
+
+---
+
 # ONTOLOGY_AGENT — Extension Protocol
 
 When ENRICHMENT_AGENT encounters an unregistered `type` or `tag`, it does NOT silently
@@ -319,3 +349,6 @@ types in existing concept files should flag for migration, not auto-migrate.
 | 0.3 | 2026-07-03 | Canonical re-ingestion of the full source PDF/extracted text (56 pages) against `directors-guide-hard-error-register.md`. Added type `Erratum` (Project-Specific Types) and tags `privacy`, `errata`, `appendix` (Domain Tags) — ONTOLOGY_AGENT extension proposed and approved same-session under direct instruction from the bundle owner. Registered a `checklists/hard-error-register.md` concept (type `Erratum`, one row per HE-1…HE-7 finding) so the bundle carries a permanent correction layer instead of silently repeating the Guide's page 39 / Table 4 / p.49 misstatements. Filled two whole-section gaps that existed only as a single generic bullet or not at all: the Privacy Act ADM-disclosure duty (new `foundations/privacy-act-adm-disclosure.md`) and Part 3 – Measuring AI Returns (new `operating-model/measuring-ai-returns.md`), plus Appendix A's full regulatory obligations table (new `foundations/regulatory-obligations-appendix-a.md`) and Appendix B resources. Added the previously-missing fifth case study, Telstra (`case-studies/telstra-case-study.md` — present in the Guide body p.45 but omitted from its own Contents page and from this bundle). Corrected two case-study drift errors against source (CBA model-governance structure; Westpac literacy-program mechanics, which had been paraphrased into content not in the Guide). Expanded the glossary from 6 to the Guide's full ~25-term Appendix D, and rebuilt the SME/NFP checklist to mirror Appendix C's four-category table verbatim rather than an invented 5-step list. See `log.md` for the full per-file mutation record. |
 | 0.4 | 2026-07-03 | **Remediation pass**, triggered by an independent second review that found v0.3's re-ingestion — despite reading the full source text — still omitted the four recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39, 43) entirely, plus Box 4, Box 8 and the closing "Over the horizon" section. Root cause: v0.3's audit was a single sequential read with no exhaustive unit-by-unit inventory, so attention (tuned to find "the good stuff": errors, new stats, missing sections) silently deprioritised repetitive-but-real structural content. No existing CHECK_1–7 catches this class of miss — those checks validate internal bundle consistency, not source-document completeness. Added type `Coverage Ledger` and tag `coverage`, and a new **§Source Coverage Contracts** section (deliberately distinct from §Deliverable Parity Contracts — that section catches concept→deliverable drift; this one catches source→bundle omission, which has no deliverable involved). Registered contract `directors-guide-coverage` against `errata/source-coverage-ledger.md`, and added AGENTS.MD CHECK_9 (CHECK_8 was already in use for a log.md placeholder check) so a future CONFORMANCE_AGENT run can catch this mechanically rather than relying on a second re-read. All four Q&A/red-flag boxes, Box 4, Box 8 and "Over the horizon" are now captured; see `log.md`. |
 | 0.5 | 2026-07-03 | **Process fix**, moving the safeguard from an after-the-fact audit (CHECK_9, v0.4) to a mandatory ingestion-time step. Added `SOURCE-DOCUMENT MODE` vs `NOTE MODE` to AGENTS.MD's ORCHESTRATOR routing table; added `STATE: INVENTORY` to ENRICHMENT_AGENT (mandatory in SOURCE-DOCUMENT MODE, skipped in NOTE MODE) — a mechanical, structure-driven enumeration pass that runs *before* any concept is written, so the Coverage Ledger is built from the document's own headings/numbering rather than from what a reader happened to notice; added `GATE_5-COVERAGE`, which blocks handoff to LINK_AGENT/INDEX_AGENT/LOG_AGENT while any ledger row remains "Not yet checked"; added Bundle Invariant #11 stating the same rule permanently. §Source Coverage Contracts (above) updated to describe CHECK_9 as the safety net, not the primary defence, now that STATE: INVENTORY exists. No new types/tags — this release is entirely inside AGENTS.MD's agent behaviour plus this explanatory update. |
+| 0.6 | 2026-07-03 | Registered the bundle's first live **Deliverable Parity Contract**: `board-workshop-diagnostic` (`deliverables/board-workshop-diagnostic.html`), a hand-authored interactive Cowork artifact built for paid Board AI Oversight Workshops. It embeds a denormalized snapshot of the ADM_STEPS five-condition test (from `foundations/privacy-act-adm-disclosure.md`), the penalty ladder (from `errata/privacy-act-hard-error-register.md` HE-4), the statutory-tort paragraph (`foundations/regulatory-obligations-appendix-a.md`), and the s180/ASIC Report 798/ASIC v Bekier paragraph (`foundations/board-role-regulatory-landscape.md`). If any of these four concepts are edited — condition wording, penalty-unit figures, exemption boundaries, case citations — the deliverable's embedded `ADM_STEPS`, `CORPUS`, and `.ladder-table` must be updated in the same pass or CONFORMANCE_AGENT will flag drift on next audit. No new types/tags. |
+| 0.7 | 2026-07-13 | Added **§Cross-Bundle Authority Contracts** and registered live contract `privacy-act-okf-adm`: Privacy Act APP 1.7–1.9 legal facts in this bundle must track the companion `privacy-act-okf` master projection (Log head 2026-07-06 at registration). Same-session re-audit closed concept gaps (APP 1.7 gate order, what-is-not-required, board-use boundary) and HE-4 $14M three-tier penalty split; workshop HTML CORPUS synced under the existing Deliverable Parity Contract. No new types/tags. |
+| 0.7.1 | 2026-07-13 | Alignment pass so regeneration cannot restore pre-sync Privacy Act errors: index Provenance + Deliverable Parity identity key updated; secondary concept pointers (board-role, governance-practices, Appendix A) and glossary ADM entry corrected; facilitator run-of-show no longer treats s13G as the sole session number; AGENTS.MD Cross-Bundle invariant added. |

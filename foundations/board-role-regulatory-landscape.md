@@ -3,7 +3,7 @@ type: Concept
 title: "The Role of the Board and the Regulatory Landscape"
 description: "Board-level oversight of AI is part of directors' existing duties, requiring compliance with privacy, consumer protection, and other legal frameworks."
 tags: ["governance", "foundations", "regulatory"]
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-13T03:05:00Z
 ---
 
 # The Role of the Board and the Regulatory Landscape
@@ -30,7 +30,7 @@ In December 2025, the National AI Plan confirmed Australia will not introduce st
 
 | Law | Summary |
 |---|---|
-| **Privacy Act 1988** | Applies to collection, use, storage, disclosure and destruction of personal information, including where used to train, test or use an AI system, unless exempt. From **10 December 2026**, organisations must disclose in their privacy policies where they use personal information in certain automated decision-making — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide states this duty inconsistently between p.18/p.39 and p.49 — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). |
+| **Privacy Act 1988** | Applies to collection, use, storage, disclosure and destruction of personal information, including where used to train, test or use an AI system, unless exempt. From **10 December 2026**, organisations must disclose in their privacy policies where they use personal information in certain automated decision-making — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected APP 1.7 gate order and APP 1.8 three-limb kinds-based disclosure (the Guide states this duty inconsistently between p.18/p.39 and p.49 — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Statutory position tracks companion bundle `privacy-act-okf`. |
 | **Australian Consumer Law (ACL)** | Prohibits misleading or deceptive conduct, unconscionable conduct, and false or misleading representations in trade or commerce; includes consumer guarantees and a product liability regime. May apply to 'AI-washing' or other misleading claims about AI capabilities. |
 | **Anti-discrimination laws** | Commonwealth and State laws prohibit direct and indirect discrimination on protected attributes (race, sex, age, disability), including where a system is trained on data reflecting historical biases. |
 | **Work health and safety laws** | Harmonised WHS laws impose a primary duty of care for worker health and safety, relevant to developing, procuring or deploying AI systems. NSW has separately enacted a duty regarding health and safety risks from work allocated by a digital work system. |

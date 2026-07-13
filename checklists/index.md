@@ -7,4 +7,4 @@
 ## References
 
 * [Appendix B: Resources](appendix-b-resources.md) — The Guide's curated list of Federal Government, AICD, HTI, Business Council of Australia, Governance Institute of Australia and CBA resources for further reading on AI governance.
-* [Glossary of AI Governance Terms](glossary.md) — The Guide's full Appendix D glossary of AI governance terms and acronyms.
+* [Glossary of AI Governance Terms](glossary.md) — The Guide's full Appendix D glossary of AI governance terms and acronyms, with an HE-5 correction note on the ADM entry (operative Privacy Act term is "computer program").

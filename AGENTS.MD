@@ -246,6 +246,12 @@ ACTION:
       If timestamps are equal or absent, flag the conflict inline with:
         <!-- CONFLICT: [old value] vs [new value] — resolve manually -->
       Do not silently discard either version.
+      **Privacy Act override:** if the conflict is about APP 1.7–1.9 disclosure content,
+      significant-effect threshold, "computer program" scope, exemptions, or penalty tiers,
+      and the incoming text restates the Guide's known hard errors (HE-1…HE-6 in
+      `errata/privacy-act-hard-error-register.md`), do **not** overwrite the corrected
+      position — keep the Hard-Error Register / `privacy-act-okf` aligned wording and annotate
+      the Guide quote as Guide-says-only (Invariant #12).
 
   UPDATE the `timestamp` frontmatter field to the current ISO 8601 datetime.
 
@@ -642,6 +648,13 @@ These rules apply at all times and override any agent instruction:
     enumeration (STATE: INVENTORY), never asserted on the strength of having read the whole
     source. NOTE MODE ingestions (a short note, single fact, or correction) are exempt — this
     invariant only binds once STATE: INVENTORY has run. See GATE_5-COVERAGE.
+12. **Privacy Act APP 1.7–1.9 legal facts follow the Cross-Bundle Authority Contract
+    `privacy-act-okf-adm` in ontology.md.** Never restore the AICD Guide's p.39 ADM summary,
+    GDPR Art 22 "legal or similarly significant effects" threshold, an AI-only framing of the
+    duty (HE-5), or a conflated s13G-only mid-market penalty story as this bundle's own
+    position. On conflict between Guide wording and `privacy-act-okf` / the Hard-Error
+    Register, the Hard-Error Register + privacy-act-okf win. Re-audit when the authority
+    Log head advances or OAIC Sep 2026 guidance is ingested.
 
 ---
 

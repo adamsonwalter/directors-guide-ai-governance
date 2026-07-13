@@ -2,10 +2,10 @@
 
 | Field            | Value                                                 |
 |---|---|
-| Generated        | 2026-07-03T05:20:40Z |
+| Generated        | 2026-07-13T02:48:34Z |
 | Scope            | master (all concepts) |
 | Concepts included| 20 |
-| Log head         | 2026-07-03 |
+| Log head         | 2026-07-13 |
 | Sync status      | Current |
 
 > **UPLOAD INSTRUCTIONS**: Upload THIS FILE ONLY to your cloud LLM Project
@@ -212,7 +212,7 @@ CONFORMANCE_AGENT checks these rules in addition to OKF v0.1 base conformance (�
 
 | Contract ID | Deliverable file | Source scope | Identity key | Severity |
 |---|---|---|---|---|
-| *(none at bundle initialisation — register the first time a hand-authored deliverable snapshots concept data; see worked example below)* | — | — | — | — |
+| `board-workshop-diagnostic` | `deliverables/board-workshop-diagnostic.html` | `foundations/privacy-act-adm-disclosure.md` (APP 1.7 five-step `ADM_STEPS` + APP 1.8 three-limb outcome text + board-use boundary), `errata/privacy-act-hard-error-register.md` (penalty ladder figures including HE-4 $14M three-tier split, HE-3/HE-5 exemption and technology-scope content), `foundations/regulatory-obligations-appendix-a.md` (statutory tort paragraph), `foundations/board-role-regulatory-landscape.md` (s180 / ASIC Report 798 / ASIC v Bekier paragraph) | The five `ADM_STEPS[].id` values (`app_entity`, `pi_used`, `sig_effect`, `arranged`, `no_exemption`) against the APP 1.7 gate order in `privacy-act-adm-disclosure.md`; the six `.ladder-table` penalty rows against HE-4's penalty-unit figures (incl. s13K/s13H/s13G separation) | ERROR |
 
 **Worked example** (illustrative only — this is not a live contract in this seed ontology; shown
 so a domain builder can copy the pattern exactly):
@@ -277,6 +277,36 @@ CONFORMANCE_AGENT should treat a `Coverage Ledger` row marked anything other tha
 
 ---
 
+# Cross-Bundle Authority Contracts
+
+> **Purpose.** This bundle is a board-facing Guide ontology. Where it states Privacy Act
+> APP 1.7–1.9 legal positions, it must not invent a second statutory story. The companion
+> `privacy-act-okf` bundle is the legal authority for those provisions. This section
+> registers that dependency so a future agent re-audits after the authority moves, instead
+> of assuming the 2026-07-03 hard-error corrections remain current forever.
+
+**Format** — one row per external authority this bundle depends on for legal facts:
+
+| Field | Meaning |
+|---|---|
+| `Contract ID` | Short slug identifying the contract. |
+| `Authority bundle` | Path or name of the governing knowledge bundle. |
+| `Authority artifact` | Projection or concept set to re-audit against (with Log head / knowledge cutoff). |
+| `Dependent surfaces` | Files in *this* bundle that must not contradict the authority. |
+| `Re-audit triggers` | Events that require a fresh Match/Gap/Fix pass. |
+| `Severity` | `ERROR` if contradiction would mislead a board workshop or client deliverable. |
+
+| Contract ID | Authority bundle | Authority artifact | Dependent surfaces | Re-audit triggers | Severity |
+|---|---|---|---|---|---|
+| `privacy-act-okf-adm` | `privacy-act-okf` (sibling repo) | `projections/privacy-act-adm-master.md` (Log head **2026-07-06** at last sync; knowledge cutoff per that bundle's AGENTS.MD) | `foundations/privacy-act-adm-disclosure.md`; `errata/privacy-act-hard-error-register.md`; `deliverables/board-workshop-diagnostic.html` (CORPUS / ADM_STEPS / penalty ladder); `PROJECT_INSTRUCTIONS.md` hard constraints | Authority Log head advances; OAIC Sep 2026 binding guidance ingested into the authority; any edit to HE / penalty / exemption / APP 1.7–1.8 wording in this bundle | ERROR |
+
+**Rule.** Privacy Act legal claims in this bundle must not contradict `privacy-act-okf`
+**confirmed** concepts. Contested / UNSETTLED items in this bundle stay UNSETTLED until the
+authority re-grades them. Board framing, Guide errata narrative, and operating-model voice
+remain this bundle's job — only the statutory facts follow the authority.
+
+---
+
 # ONTOLOGY_AGENT — Extension Protocol
 
 When ENRICHMENT_AGENT encounters an unregistered `type` or `tag`, it does NOT silently
@@ -327,10 +357,15 @@ types in existing concept files should flag for migration, not auto-migrate.
 | 0.3 | 2026-07-03 | Canonical re-ingestion of the full source PDF/extracted text (56 pages) against `directors-guide-hard-error-register.md`. Added type `Erratum` (Project-Specific Types) and tags `privacy`, `errata`, `appendix` (Domain Tags) — ONTOLOGY_AGENT extension proposed and approved same-session under direct instruction from the bundle owner. Registered a `checklists/hard-error-register.md` concept (type `Erratum`, one row per HE-1…HE-7 finding) so the bundle carries a permanent correction layer instead of silently repeating the Guide's page 39 / Table 4 / p.49 misstatements. Filled two whole-section gaps that existed only as a single generic bullet or not at all: the Privacy Act ADM-disclosure duty (new `foundations/privacy-act-adm-disclosure.md`) and Part 3 – Measuring AI Returns (new `operating-model/measuring-ai-returns.md`), plus Appendix A's full regulatory obligations table (new `foundations/regulatory-obligations-appendix-a.md`) and Appendix B resources. Added the previously-missing fifth case study, Telstra (`case-studies/telstra-case-study.md` — present in the Guide body p.45 but omitted from its own Contents page and from this bundle). Corrected two case-study drift errors against source (CBA model-governance structure; Westpac literacy-program mechanics, which had been paraphrased into content not in the Guide). Expanded the glossary from 6 to the Guide's full ~25-term Appendix D, and rebuilt the SME/NFP checklist to mirror Appendix C's four-category table verbatim rather than an invented 5-step list. See `log.md` for the full per-file mutation record. |
 | 0.4 | 2026-07-03 | **Remediation pass**, triggered by an independent second review that found v0.3's re-ingestion — despite reading the full source text — still omitted the four recurring "Questions for directors to ask" / "Governance red flags" boxes (pp.30, 33, 39, 43) entirely, plus Box 4, Box 8 and the closing "Over the horizon" section. Root cause: v0.3's audit was a single sequential read with no exhaustive unit-by-unit inventory, so attention (tuned to find "the good stuff": errors, new stats, missing sections) silently deprioritised repetitive-but-real structural content. No existing CHECK_1–7 catches this class of miss — those checks validate internal bundle consistency, not source-document completeness. Added type `Coverage Ledger` and tag `coverage`, and a new **§Source Coverage Contracts** section (deliberately distinct from §Deliverable Parity Contracts — that section catches concept→deliverable drift; this one catches source→bundle omission, which has no deliverable involved). Registered contract `directors-guide-coverage` against `errata/source-coverage-ledger.md`, and added AGENTS.MD CHECK_9 (CHECK_8 was already in use for a log.md placeholder check) so a future CONFORMANCE_AGENT run can catch this mechanically rather than relying on a second re-read. All four Q&A/red-flag boxes, Box 4, Box 8 and "Over the horizon" are now captured; see `log.md`. |
 | 0.5 | 2026-07-03 | **Process fix**, moving the safeguard from an after-the-fact audit (CHECK_9, v0.4) to a mandatory ingestion-time step. Added `SOURCE-DOCUMENT MODE` vs `NOTE MODE` to AGENTS.MD's ORCHESTRATOR routing table; added `STATE: INVENTORY` to ENRICHMENT_AGENT (mandatory in SOURCE-DOCUMENT MODE, skipped in NOTE MODE) — a mechanical, structure-driven enumeration pass that runs *before* any concept is written, so the Coverage Ledger is built from the document's own headings/numbering rather than from what a reader happened to notice; added `GATE_5-COVERAGE`, which blocks handoff to LINK_AGENT/INDEX_AGENT/LOG_AGENT while any ledger row remains "Not yet checked"; added Bundle Invariant #11 stating the same rule permanently. §Source Coverage Contracts (above) updated to describe CHECK_9 as the safety net, not the primary defence, now that STATE: INVENTORY exists. No new types/tags — this release is entirely inside AGENTS.MD's agent behaviour plus this explanatory update. |
+| 0.6 | 2026-07-03 | Registered the bundle's first live **Deliverable Parity Contract**: `board-workshop-diagnostic` (`deliverables/board-workshop-diagnostic.html`), a hand-authored interactive Cowork artifact built for paid Board AI Oversight Workshops. It embeds a denormalized snapshot of the ADM_STEPS five-condition test (from `foundations/privacy-act-adm-disclosure.md`), the penalty ladder (from `errata/privacy-act-hard-error-register.md` HE-4), the statutory-tort paragraph (`foundations/regulatory-obligations-appendix-a.md`), and the s180/ASIC Report 798/ASIC v Bekier paragraph (`foundations/board-role-regulatory-landscape.md`). If any of these four concepts are edited — condition wording, penalty-unit figures, exemption boundaries, case citations — the deliverable's embedded `ADM_STEPS`, `CORPUS`, and `.ladder-table` must be updated in the same pass or CONFORMANCE_AGENT will flag drift on next audit. No new types/tags. |
+| 0.7 | 2026-07-13 | Added **§Cross-Bundle Authority Contracts** and registered live contract `privacy-act-okf-adm`: Privacy Act APP 1.7–1.9 legal facts in this bundle must track the companion `privacy-act-okf` master projection (Log head 2026-07-06 at registration). Same-session re-audit closed concept gaps (APP 1.7 gate order, what-is-not-required, board-use boundary) and HE-4 $14M three-tier penalty split; workshop HTML CORPUS synced under the existing Deliverable Parity Contract. No new types/tags. |
+| 0.7.1 | 2026-07-13 | Alignment pass so regeneration cannot restore pre-sync Privacy Act errors: index Provenance + Deliverable Parity identity key updated; secondary concept pointers (board-role, governance-practices, Appendix A) and glossary ADM entry corrected; facilitator run-of-show no longer treats s13G as the sole session number; AGENTS.MD Cross-Bundle invariant added. |
+
+
+---
 
 ## AI Governance Enablers
-
-*Type: Concept | Tags: governance, operating-model, enablers | Updated: 2026-07-03T02:55:56Z*
+*Type: Concept | Tags: governance, operating-model, enablers | Updated: 2026-07-03 02:55:56+00:00*
 
 # AI Governance Enablers
 
@@ -370,10 +405,11 @@ Organisations must remain sensitive to the impact of AI on internal and external
 * [Case Study: Westpac – Building Senior Leadership's AI Literacy](/case-studies/westpac-case-study.md)
 * [Case Study: Telstra – AI Governance Operating Model in Action](/case-studies/telstra-case-study.md)
 
----
-## AI Governance Practices
 
-*Type: Concept | Tags: governance, operating-model, practices | Updated: 2026-07-03T02:55:56Z*
+---
+
+## AI Governance Practices
+*Type: Concept | Tags: governance, operating-model, practices | Updated: 2026-07-13 03:05:00+00:00*
 
 # AI Governance Practices
 
@@ -414,7 +450,7 @@ The board should have confidence management maintains an **AI inventory/register
 
 ## Privacy and transparency
 
-Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
+Organisations should review privacy policies and processes for AI-specific risks — for example, AI agents collecting personal information during interactions, or personal information used to train in-house models. From **10 December 2026**, organisations subject to the Privacy Act using ADM systems must meet new disclosure requirements — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected APP 1.7 applicability gate and APP 1.8 three-limb kinds-based test (the Guide's own summary of this duty on this page is inconsistent with its Appendix A wording — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Some organisations go beyond minimum disclosure — CBA's *Our Approach to Adopting AI* (2025) report is cited as a notable transparency example.
 
 ## Questions for directors to ask (p.39)
 
@@ -439,10 +475,11 @@ Organisations should review privacy policies and processes for AI-specific risks
 * [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md)
 * [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md)
 
----
-## AI Governance Structure
 
-*Type: Concept | Tags: governance, operating-model, structure | Updated: 2026-07-03T02:55:56Z*
+---
+
+## AI Governance Structure
+*Type: Concept | Tags: governance, operating-model, structure | Updated: 2026-07-03 02:55:56+00:00*
 
 # AI Governance Structure
 
@@ -490,10 +527,11 @@ A critical enabler of effective AI governance is the board's own AI literacy. Di
 * [AI Strategy Alignment](/operating-model/strategy.md)
 * [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md)
 
----
-## AI is a Transformative Technology
 
-*Type: Concept | Tags: governance, foundations, technology | Updated: 2026-07-03T02:55:56Z*
+---
+
+## AI is a Transformative Technology
+*Type: Concept | Tags: governance, foundations, technology | Updated: 2026-07-03 02:55:56+00:00*
 
 # AI is a Transformative Technology
 
@@ -542,10 +580,11 @@ HTI identifies four common use-case categories to help boards assess governance 
 * [AI Opportunities and Risks](/foundations/opportunities-and-risks.md)
 * [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md)
 
----
-## AI Opportunities and Risks
 
-*Type: Concept | Tags: governance, foundations, risk | Updated: 2026-07-03T02:55:56Z*
+---
+
+## AI Opportunities and Risks
+*Type: Concept | Tags: governance, foundations, risk | Updated: 2026-07-03 02:55:56+00:00*
 
 # AI Opportunities and Risks
 
@@ -606,10 +645,11 @@ AI systems have significant lifecycle energy and resource needs, including chip/
 * [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md)
 * [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](/errata/privacy-act-hard-error-register.md)
 
----
-## AI Strategy Alignment
 
-*Type: Concept | Tags: governance, operating-model, strategy | Updated: 2026-07-03T02:55:56Z*
+---
+
+## AI Strategy Alignment
+*Type: Concept | Tags: governance, operating-model, strategy | Updated: 2026-07-03 02:55:56+00:00*
 
 # AI Strategy Alignment
 
@@ -652,10 +692,11 @@ How to measure whether these investments actually deliver value is addressed sep
 * [AI Opportunities and Risks](/foundations/opportunities-and-risks.md)
 * [Measuring Value and Returns from AI](/operating-model/measuring-ai-returns.md)
 
----
-## Appendix A: Regulatory Obligations and AI
 
-*Type: Reference | Tags: regulatory, foundations, appendix | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Appendix A: Regulatory Obligations and AI
+*Type: Reference | Tags: regulatory, foundations, appendix | Updated: 2026-07-13 03:05:00+00:00*
 
 # Appendix A: Regulatory Obligations and AI
 
@@ -694,8 +735,10 @@ From **10 December 2026**, organisations covered by the Privacy Act must, in cer
 circumstances, include details in their privacy policies about the use of computer
 programs to make, or to do a thing substantially and directly related to making, a
 decision — required where the decision could significantly affect an individual's rights
-or interests and the program uses their personal information. See the dedicated concept:
-[Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md).
+or interests and the program uses their personal information. Full APP 1.7 gate order,
+what the duty does **not** require, enforcement tiers, and unsettled points: see
+[Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) (legal
+authority: companion `privacy-act-okf`).
 
 ## Consumer protection
 
@@ -794,10 +837,11 @@ exception.
 * [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md)
 * [Appendix B: Resources](/checklists/appendix-b-resources.md)
 
----
-## Appendix B: Resources
 
-*Type: Reference | Tags: governance, checklist, appendix | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Appendix B: Resources
+*Type: Reference | Tags: governance, checklist, appendix | Updated: 2026-07-03 02:55:56+00:00*
 
 # Appendix B: Resources
 
@@ -840,10 +884,11 @@ exception.
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 * [Glossary of AI Governance Terms](/checklists/glossary.md)
 
----
-## Appendix C: SME and NFP Director Checklist
 
-*Type: Playbook | Tags: governance, checklist, appendix | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Appendix C: SME and NFP Director Checklist
+*Type: Playbook | Tags: governance, checklist, appendix | Updated: 2026-07-03 02:55:56+00:00*
 
 # Appendix C: SME and NFP Director Checklist
 
@@ -899,10 +944,11 @@ exception.
 * [AI Governance Enablers](/operating-model/governance-enablers.md)
 * [AI is a Transformative Technology](/foundations/transformative-technology.md)
 
----
-## Case Study: Atlassian's Responsible Tech Review
 
-*Type: Concept | Tags: case-study, governance, practices | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Case Study: Atlassian's Responsible Tech Review
+*Type: Concept | Tags: case-study, governance, practices | Updated: 2026-07-03 02:55:56+00:00*
 
 # Case Study: Atlassian's Responsible Tech Review
 
@@ -918,10 +964,11 @@ Atlassian uses a **Responsible Tech Review Template** completed by product teams
 ## Related Concepts
 * [AI Governance Practices](/operating-model/governance-practices.md)
 
----
-## Case Study: Canteen – Listening to the Voice of Members
 
-*Type: Concept | Tags: case-study, governance, structure | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Case Study: Canteen – Listening to the Voice of Members
+*Type: Concept | Tags: case-study, governance, structure | Updated: 2026-07-03 02:55:56+00:00*
 
 # Case Study: Canteen – Listening to the Voice of Members
 
@@ -944,10 +991,11 @@ Directors** who are volunteers bringing relevant expertise to the board.
 ## Related Concepts
 * [AI Governance Structure](/operating-model/governance-structure.md)
 
----
-## Case Study: Commonwealth Bank of Australia (CBA)
 
-*Type: Concept | Tags: case-study, governance, practices, structure | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Case Study: Commonwealth Bank of Australia (CBA)
+*Type: Concept | Tags: case-study, governance, practices, structure | Updated: 2026-07-03 02:55:56+00:00*
 
 # Case Study: Commonwealth Bank of Australia (CBA)
 
@@ -974,10 +1022,11 @@ risk committees, Model Risk Governance Committee, AI Risk Committee) under CBA's
 * [AI Governance Practices](/operating-model/governance-practices.md)
 * [AI Governance Structure](/operating-model/governance-structure.md)
 
----
-## Case Study: Telstra – AI Governance Operating Model in Action
 
-*Type: Concept | Tags: case-study, governance, structure, practices, enablers | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Case Study: Telstra – AI Governance Operating Model in Action
+*Type: Concept | Tags: case-study, governance, structure, practices, enablers | Updated: 2026-07-03 02:55:56+00:00*
 
 # Case Study: Telstra – AI Governance Operating Model in Action
 
@@ -1024,10 +1073,11 @@ completions** and helping build responsible AI capability across the organisatio
 * [AI Governance Practices](/operating-model/governance-practices.md)
 * [AI Governance Enablers](/operating-model/governance-enablers.md)
 
----
-## Case Study: Westpac – Building Senior Leadership's AI Literacy
 
-*Type: Concept | Tags: case-study, governance, enablers | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Case Study: Westpac – Building Senior Leadership's AI Literacy
+*Type: Concept | Tags: case-study, governance, enablers | Updated: 2026-07-03 02:55:56+00:00*
 
 # Case Study: Westpac – Building Senior Leadership's AI Literacy
 
@@ -1060,23 +1110,25 @@ description.*
 * [AI Governance Enablers](/operating-model/governance-enablers.md)
 * [AI Governance Structure](/operating-model/governance-structure.md)
 
----
-## Glossary of AI Governance Terms
 
-*Type: Reference | Tags: governance, system, appendix | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Glossary of AI Governance Terms
+*Type: Reference | Tags: governance, system, appendix | Updated: 2026-07-13 03:00:00+00:00*
 
 # Glossary of AI Governance Terms
 
-> Reproduces the Guide's Appendix D verbatim (pp.53-54). Two governance-relevant terms not
-> in the Guide's own glossary — **Tokenomics** and **Algorithmic Drift** — are retained
-> below as bundle additions and marked accordingly, since they are used elsewhere in this
-> bundle.
+> Reproduces the Guide's Appendix D verbatim (pp.53-54), with **one Privacy Act correction
+> note** on the ADM entry (HE-5) so regenerating or quoting this glossary cannot reintroduce
+> an AI-only framing of the December 2026 duty. Two governance-relevant terms not in the
+> Guide's own glossary — **Tokenomics** and **Algorithmic Drift** — are retained below as
+> bundle additions and marked accordingly, since they are used elsewhere in this bundle.
 
 * **Artificial intelligence (AI)**: A set of technologies that enable machines to perform tasks that typically require human intelligence, such as analysing data, generating content, making predictions or supporting decisions.
 * **Agentic AI**: AI systems capable of executing tasks with a degree of autonomy, often coordinating actions across systems or workflows to achieve an objective.
 * **ACCC**: Australian Competition and Consumer Commission.
 * **ACL**: Australian Consumer Law.
-* **ADM**: Automated decision-making.
+* **ADM**: Automated decision-making. *(Guide glossary — retained.) For the Privacy Act duty commencing 10 December 2026, the operative statutory term is **"computer program"** (not "AI" or "ADM system"); see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) and [Hard-Error Register — HE-5](/errata/privacy-act-hard-error-register.md).*
 * **AASB**: Australian Accounting Standards Board.
 * **AI6 (National AI Centre guidance)**: A set of six essential practices developed by the National AI Centre to support the safe and responsible development and use of AI systems — accountability, impact assessment, risk management, transparency, testing and monitoring, and maintaining human control.
 * **AI assurance**: Processes that provide confidence that AI systems are operating as intended and within defined risk parameters, including testing, validation and audit.
@@ -1110,10 +1162,11 @@ description.*
 * [AI is a Transformative Technology](/foundations/transformative-technology.md)
 * [Appendix B: Resources](/checklists/appendix-b-resources.md)
 
----
-## Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide
 
-*Type: Erratum | Tags: errata, regulatory, privacy, review-required | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide
+*Type: Erratum | Tags: errata, regulatory, privacy, review-required | Updated: 2026-07-13 02:45:00+00:00*
 
 # Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide
 
@@ -1124,6 +1177,11 @@ description.*
 > (enacted wording / explicit OAIC or Explanatory Memorandum statement), **UNSETTLED**
 > (awaiting OAIC binding guidance, expected ~September 2026), **REASONED VIEW**
 > (inference or advisory material, not itself enacted text).
+>
+> **Legal authority.** Canonical Privacy Act APP 1.7–1.9 positions (including penalty
+> figures) are re-audited against the companion bundle `privacy-act-okf` (master projection
+> Log head **2026-07-06** as of this update). This register records Guide errors; it does
+> not invent a second statutory position.
 >
 > This is information to support a decision, not legal advice. Before any external claim
 > or compliance position is relied on, have it confirmed by a qualified Australian privacy
@@ -1205,10 +1263,23 @@ penalty units = A$364,000 per contravention)** for a body corporate. Broader int
 penalties escalate through **s 13H (10,000 penalty units = A$3.64M)** and **s 13G**
 (serious/repeated). On s 13G, note the correction most relevant to this Guide's mid-market
 readers: **below roughly A$167M turnover the 30%-of-turnover limb, not the A$50M figure, is
-the operative maximum** — e.g. about A$4.2M for a A$14M-turnover company. A director's
-guide that gives the deadline but not the enforcement mechanics leaves boards unable to
-weigh the risk it is asking them to govern. *(Classified as a hard gap rather than a
-misstatement — nothing wrong is asserted; the decisive facts are absent.)*
+the operative maximum**.
+
+**Worked case — A$14M-turnover APP entity (do not conflate the tiers):**
+
+| Mechanism | Amount at A$14M turnover |
+|---|---|
+| Infringement notice s 80UB (unlisted corp) | **A$21,840** (60 PU) |
+| Specified APP / privacy-policy breach s 13K | **A$364,000** per contravention |
+| Interference, not serious/repeated s 13H | **A$3.64M** |
+| Serious/repeated interference s 13G (30% limb) | ≈ **A$4.2M** |
+
+A privacy-policy failure is typically an **s 13K** exposure, not an automatic **s 13G**
+maximum. Credible single-proceeding worst case at this turnover sits in the **low-to-mid
+single-digit millions**, not A$50M. A director's guide that gives the deadline but not the
+enforcement mechanics leaves boards unable to weigh the risk it is asking them to govern.
+*(Classified as a hard gap rather than a misstatement — nothing wrong is asserted; the
+decisive facts are absent.)*
 
 ## HE-5 — The statutory term "computer program" is never surfaced (throughout)
 
@@ -1276,10 +1347,11 @@ how much weight a reader should place on unverified detail elsewhere in the Guid
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 * [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md)
 
----
-## Measuring Value and Returns from AI
 
-*Type: Concept | Tags: governance, operating-model, strategy | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Measuring Value and Returns from AI
+*Type: Concept | Tags: governance, operating-model, strategy | Updated: 2026-07-03 02:55:56+00:00*
 
 # Measuring Value and Returns from AI
 
@@ -1394,10 +1466,11 @@ technology.
 * [AI is a Transformative Technology](/foundations/transformative-technology.md)
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 
----
-## Privacy Act ADM Disclosure Duty
 
-*Type: Concept | Tags: governance, regulatory, privacy, foundations | Updated: 2026-07-03T02:55:56Z*
+---
+
+## Privacy Act ADM Disclosure Duty
+*Type: Concept | Tags: governance, regulatory, privacy, foundations | Updated: 2026-07-13 02:45:00+00:00*
 
 # Privacy Act ADM Disclosure Duty
 
@@ -1414,6 +1487,30 @@ transparency duty.
 > [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md) for the
 > full comparison.
 
+> **Legal authority.** Privacy Act APP 1.7–1.9 facts in this concept are kept aligned to
+> the companion bundle `privacy-act-okf` (master projection
+> `projections/privacy-act-adm-master.md`, Log head **2026-07-06** at last re-audit). Board
+> framing stays in this bundle; statutory position follows that authority. Contested items
+> stay UNSETTLED until that bundle re-grades them (binding OAIC guidance expected
+> ~September 2026).
+
+## When the duty applies — APP 1.7 (stop at the first NO)
+
+The disclosure duty switches on only if **every** condition below is met. Evaluate in this
+order (cheapest filters first; the contested limb last):
+
+| Step | Question | If NO |
+|---|---|---|
+| 0 | Is the organisation an **APP entity**? (Turnover above A$3M, **or** smaller but caught regardless: health-service provider holding health information, trades in personal information, Commonwealth contracted service provider, residential-tenancy-database operator.) | Out of scope |
+| 1 | Is **personal information** about the individual used in running the program? (Genuine de-identification exits here; reversible pseudonymisation does **not**.) | Out of scope |
+| 2 | Could the decision reasonably be expected to **significantly affect** the person's rights or interests? (More than trivial; adverse **or** beneficial — APP 1.7(b), APP 1.9(c).) | Out of scope |
+| 3 | Did the organisation **arrange for a computer program** to make the decision, or to do a thing **substantially and directly related** to making it? (Includes human-assisted decisions where a person signs off but the program did the substantive work. The "substantially and directly related" margin is **UNSETTLED**, pending OAIC binding guidance ~September 2026.) | Out of scope |
+| 4 | Does an **exemption** apply? (Employee-records exemption s 7B(3) covers current/former employees only — not applicants, volunteers, government employers, or third-party HR vendors. See [HE-3](/errata/privacy-act-hard-error-register.md).) | If an exemption applies → out; if none → continue |
+
+If all steps pass and no exemption applies → **APP 1.8 disclosure is required**. Always name
+the deciding condition and its confidence (CONFIRMED / UNSETTLED) before stating a firm
+in/out conclusion.
+
 ## The three-limb disclosure test (APP 1.8)
 
 The privacy policy must set out, at the level of **kinds** — not individual occasions or
@@ -1428,6 +1525,25 @@ per-decision records — three things:
 Limb 3 is the provision's distinctive reach. It is what defeats the assumption that "a
 human signs off, so we're fine" — a board that scopes its disclosure inventory to
 fully-automated decisions only will under-capture its real exposure.
+
+## What this duty does **not** require
+
+APP 1.7–1.9 create a **privacy-policy update only**. They do **not** create:
+
+- a right for individuals to **contest** an automated decision, or to refuse being subject to one;
+- a right to the **reasoning behind a specific decision**;
+- an obligation to **notify each affected person** when ADM is used for their decision;
+- a **mandatory Privacy Impact Assessment** (though the OAIC treats PIAs as a reasonable step for high-risk AI);
+- **per-decision audit logging** beyond existing APP obligations.
+
+## Board-use boundary
+
+Using AI to **digest board papers, minutes, or pack material** for the board's own governance
+work is **not**, by itself, an APP 1.7 trigger. The ADM disclosure duty applies where a
+computer program makes, or substantially and directly assists in making, a decision **about
+an identifiable individual** using that person's personal information. Do not conflate
+Corporations Act board-process risk (e.g. *ASIC v Bekier*, s 180) with the Privacy Act ADM
+test unless those individual-decision conditions are met.
 
 ## The trigger: "significantly affect"
 
@@ -1466,7 +1582,8 @@ A deficient privacy policy is enforceable **without going to court** by OAIC inf
 notice (penalty units, scaling by entity type), and by Federal Court civil penalty for more
 serious or repeated interferences with privacy. See
 [Hard-Error Register — HE-4](/errata/privacy-act-hard-error-register.md) for the specific
-penalty-unit figures and dollar values (current from 1 July 2026).
+penalty-unit figures and dollar values (current from 1 July 2026), including the mid-market
+worked case that separates s 13K, s 13H, and s 13G.
 
 ## What remains unsettled
 
@@ -1488,10 +1605,11 @@ for example, the deployment of facial recognition technology without valid conse
 * [The Role of the Board and the Regulatory Landscape](/foundations/board-role-regulatory-landscape.md)
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 
----
-## Source Coverage Ledger — A Director's Guide to AI Governance
 
-*Type: "Coverage Ledger" | Tags: coverage, errata, review-required | Updated: 2026-07-03T05:06:40Z*
+---
+
+## Source Coverage Ledger — A Director's Guide to AI Governance
+*Type: Coverage Ledger | Tags: coverage, errata, review-required | Updated: 2026-07-03 05:06:40+00:00*
 
 # Source Coverage Ledger — A Director's Guide to AI Governance
 
@@ -1612,10 +1730,11 @@ this ledger is precisely that it forces enumeration rather than recognition-base
 ## Related Concepts
 * [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](/errata/privacy-act-hard-error-register.md)
 
----
-## The Role of the Board and the Regulatory Landscape
 
-*Type: Concept | Tags: governance, foundations, regulatory | Updated: 2026-07-03T02:55:56Z*
+---
+
+## The Role of the Board and the Regulatory Landscape
+*Type: Concept | Tags: governance, foundations, regulatory | Updated: 2026-07-13 03:05:00+00:00*
 
 # The Role of the Board and the Regulatory Landscape
 
@@ -1641,7 +1760,7 @@ In December 2025, the National AI Plan confirmed Australia will not introduce st
 
 | Law | Summary |
 |---|---|
-| **Privacy Act 1988** | Applies to collection, use, storage, disclosure and destruction of personal information, including where used to train, test or use an AI system, unless exempt. From **10 December 2026**, organisations must disclose in their privacy policies where they use personal information in certain automated decision-making — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected three-limb test (the Guide states this duty inconsistently between p.18/p.39 and p.49 — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). |
+| **Privacy Act 1988** | Applies to collection, use, storage, disclosure and destruction of personal information, including where used to train, test or use an AI system, unless exempt. From **10 December 2026**, organisations must disclose in their privacy policies where they use personal information in certain automated decision-making — see [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) for the corrected APP 1.7 gate order and APP 1.8 three-limb kinds-based disclosure (the Guide states this duty inconsistently between p.18/p.39 and p.49 — see [Hard-Error Register — HE-1](/errata/privacy-act-hard-error-register.md)). Statutory position tracks companion bundle `privacy-act-okf`. |
 | **Australian Consumer Law (ACL)** | Prohibits misleading or deceptive conduct, unconscionable conduct, and false or misleading representations in trade or commerce; includes consumer guarantees and a product liability regime. May apply to 'AI-washing' or other misleading claims about AI capabilities. |
 | **Anti-discrimination laws** | Commonwealth and State laws prohibit direct and indirect discrimination on protected attributes (race, sex, age, disability), including where a system is trained on data reflecting historical biases. |
 | **Work health and safety laws** | Harmonised WHS laws impose a primary duty of care for worker health and safety, relevant to developing, procuring or deploying AI systems. NSW has separately enacted a duty regarding health and safety risks from work allocated by a digital work system. |
@@ -1682,5 +1801,3 @@ AI systems can behave in ways that are less transparent and harder to test. Boar
 * [Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md)
 * [Appendix A: Regulatory Obligations and AI](/foundations/regulatory-obligations-appendix-a.md)
 * [Hard-Error Register — Privacy Act / ADM Disclosure Content in the Guide](/errata/privacy-act-hard-error-register.md)
-
----

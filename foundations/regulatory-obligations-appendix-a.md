@@ -4,7 +4,7 @@ title: "Appendix A: Regulatory Obligations and AI"
 description: "The Guide's full Appendix A survey of existing Australian laws relevant to developing and using AI systems, current as at June 2026: privacy, consumer law, anti-discrimination, industrial relations, WHS, negligence, environmental reporting, cyber security and copyright."
 resource: "A Director's Guide to AI Governance (AICD/HTI, v2, June 2026), Appendix A, pp.48-50"
 tags: ["regulatory", "foundations", "appendix"]
-timestamp: 2026-07-03T02:55:56Z
+timestamp: 2026-07-13T03:05:00Z
 ---
 
 # Appendix A: Regulatory Obligations and AI
@@ -44,8 +44,10 @@ From **10 December 2026**, organisations covered by the Privacy Act must, in cer
 circumstances, include details in their privacy policies about the use of computer
 programs to make, or to do a thing substantially and directly related to making, a
 decision — required where the decision could significantly affect an individual's rights
-or interests and the program uses their personal information. See the dedicated concept:
-[Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md).
+or interests and the program uses their personal information. Full APP 1.7 gate order,
+what the duty does **not** require, enforcement tiers, and unsettled points: see
+[Privacy Act ADM Disclosure Duty](/foundations/privacy-act-adm-disclosure.md) (legal
+authority: companion `privacy-act-okf`).
 
 ## Consumer protection
 
